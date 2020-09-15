@@ -1,0 +1,169 @@
+#!/bin/bash -e
+
+#### text attributes ####
+#red=`tput setaf 1`
+#green=`tput setaf 2`
+#yellow=`tput setaf 3`
+#blue=`tput setaf 4`
+#magenta=`tput setaf 5`
+#cyan=`tput setaf 6`
+#white=`tput setaf 7`
+#blink=`tput blink`
+#NC=`tput sgr0`
+
+###################################################################
+# version : version of the idv.sh file
+# cdir    : pionts to current working directory where idv.sh file runs
+# repo    : URL to kernel source repository
+# kdir    : Directory where kernel will be pulled and saved from repo
+# branch  : tag or branch of the kernel source
+# patches : idv patch file name with our ".tar.gz" extention
+###################################################################
+#version="0.7"
+#cdir=$(pwd)
+
+#================================================
+# 1) IOTG kernel source repo, patches and kernel directory
+#================================================
+# iotg repo: "https://github.com/intel/linux-intel-lts.git"
+# iotg idv branch/tag: "lts-v5.4.57-yocto-200819T072823Z"
+#repo="https://github.com/intel/linux-intel-lts.git"
+#branch="lts-v5.4.57-yocto-200819T072823Z"
+#patches=""
+
+# ccp repo: "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
+# ccp idv branch/tag: "v5.4.54"
+#repo="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
+#branch="v5.4.54"
+#patches="idv3.0_er3_patchset_rbhe"
+
+#================================================
+# directory where kernel will be pulled and saved ####
+#kdir="kernel"
+
+#================================================
+# Cleaning
+# Usage:  $ ./idv.sh clean
+#================================================
+function clean() {
+  [[ -d "$cdir/$kdir" && ! -z "$kdir" ]] && rm -rf $cdir/$kdir
+  [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && rm -rf $cdir/$patches
+  [ -d "$cdir/ubuntu-package" ] && rm -rf $cdir/ubuntu-package
+  rm -rf $cdir/*.deb
+}
+[[ "$1" == "clean" ]] && clean && exit 0
+
+#================================================
+# Output current status
+#================================================
+echo -en '\n'
+echo "================================================="
+echo "idv version:  ${green}$version${NC}"
+echo "repo:         ${green}$repo${NC}"
+echo "branch:       ${green}$branch${NC}"
+echo "kernel dir:   ${green}$kdir${NC}"
+echo "Kernel ver:   ${green}$kversion${NC}"
+echo "Kernel rev:   ${green}$krevision${NC}"
+
+
+if [ -d "$patches" ]; then
+  # if patches directory exists
+  echo "${green} -- patching from a $patches directory ...${NC}"
+  echo "patches:      ${green}$patches directory${NC}"
+elif [ ! -z "$patches" ]; then
+  # if .tar.gz file exists
+  echo "${green} -- patching from $patches ...${NC}"
+  echo "patches:      ${green}$patches${NC}"
+
+else
+  echo "patches:      ${yellow}No patches are applied ...${NC}"
+fi
+
+echo -e "current dir:  ${blink}$cdir${NC}"
+echo "=================================================\n"
+echo -en '\n'
+
+read -p "Press <Enter> key to continue"
+
+#================================================
+# 2) Install packages to compile the kernel
+#================================================
+function install_packages() {
+sudo -s <<RUNASSUDO_PACKAGE
+  apt-get autoremove -y &>/dev/null
+  apt-get install -y liblz4-tool kernel-package libelf-dev build-essential git libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server net-tools kernel-package &>/dev/null
+RUNASSUDO_PACKAGE
+}
+#================================================
+# 3) Add modules for KVM/GVTg
+#================================================
+function add_modules() {
+modules=(kvmgt vfio-iommu-type1 vfio-mdev vfio-pci)
+
+for i in "${modules[@]}"
+  do
+    echo $i
+sudo -s <<RUNASSUDO_MODULES
+  grep -qxF $i /etc/initramfs-tools/modules || echo $i >> /etc/initramfs-tools/modules
+RUNASSUDO_MODULES
+done
+}
+
+#================================================
+#cp -a /usr/share/kernel-package $cdir/ubuntu-package
+
+#================================================
+# 4) Pull the kernel source
+#================================================
+function pull_kernel() {
+[[ ! -d "$cdir/$kdir" ]] && git clone --depth 1 $repo --branch $branch --single-branch $kdir
+}
+
+#================================================
+# 5) Apply patches if specified
+#================================================
+function apply_patches() {
+if [ -d "$patches" ]; then
+  # if patches directory exists
+  echo "${green} -- patching from a $patches directory ...${NC}"
+
+  ( cd $kdir && git reset --hard )
+  git apply --directory=$kdir $cdir/$patches/*
+
+elif [ -f "$patches.tar.gz" ]; then
+  # if .tar.gz file exists
+  echo "${green} -- patching from $patches.tar.gz ...${NC}"
+
+  tar xzvf $cdir/$patches.tar.gz
+  ( cd $kdir && git reset --hard )
+  git apply --directory=$kdir $cdir/$patches/*
+else
+  echo "${green} -- No patches is applied ...${NC}"
+fi
+}
+
+#================================================
+# 5) config file for kernel
+#================================================
+# Fetch kernel config to .config and apply it using make oldconfig
+function kernel_config() {
+if [ ! -z "$configurl" ]; then
+    echo "fetching kernel config from $configurl"
+    /usr/bin/wget -q -O $kdir/.config $configurl
+fi
+
+echo "${green}--- Appling kernel config ...${NC}"
+( cd $kdir && yes "" | make oldconfig )
+}
+
+function compile_kernel() {
+( cd $kdir && CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers )
+}
+
+#install_packages
+#add_modules
+#pull_kernel
+#apply_patches
+#kernel_config
+#compile_kernel
+

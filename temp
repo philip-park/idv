@@ -1,0 +1,4 @@
+export repo="https://github.com/intel/linux-intel-lts.git"
+export branch="lts-v5.4.57-yocto-200819T072823Z"
+export patches=""
+export patches=idv3.0_er3_patchset_rbhe
