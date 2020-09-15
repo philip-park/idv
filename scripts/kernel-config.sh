@@ -1,9 +1,9 @@
 #!/bin/bash
 
 kernel_repo+=("CCG-repo" "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git" off \
-              "branch is v5.4.54, IDV patches are needed")
+              "v5.4.54")
 kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off \
-              "brach is lts-v5.4.57-yocto-200819T072823Z")
+              "lts-v5.4.57-yocto-200819T072823Z")
 
 default_config=./scripts/idv-config-default
 idv_config_file=./.idv-config
@@ -35,8 +35,31 @@ function kernel_options() {
 "${kernel_repo[@]}" \
     3>&1 1>&2 2>&3 )
 
+  for (( i=0; i<${#kernel_repo[@]}; i += 4 )); do
+      echo "($i), o: $option, k: ${kernel_repo[$i]}"
+    if [[ $option == ${kernel_repo[$i]} ]]; then
+#      echo "[$i], ${kernel_repo[$((i+1))]//\//\\/}"
+#      test=${ernel_repo[$((i+1))]//\//\\/}
+      if grep -qF "repo=" $idv_config_file; then
+        sed -i "s/^repo=.*$/repo=${kernel_repo[$((i+1))]//\//\\/}/" $idv_config_file
+        sed -i "s/^branch=.*$/branch=${kernel_repo[$((i+3))]//\//\\/}/" $idv_config_file
+#        sed -i "s/^.*repo=.*$/repo=${kernel_repo[$((i+1))]//\//\\/}/" $idv_config_file
+#        echo "found kkkk: $?"
+      else
+        echo "repo=${kernel_repo[$((i+1))]//\//\\/}/" >> $idv_config_file
+#        echo "not found kkkk: $?"
+      fi
+
+#      `sed -i "s/^.*repo=.*$/repo=${kernel_repo[$((i+1))]//\//\\/}/" $idv_config_file`
+#      echo "retun code: $?"
+    fi
+  done
+exit 0
   case $option in
     IOTG-repo)
+
+  test=${test//\//\\/}
+
 #      `sed -i "s/^.*repo=.*$/repo/" ./.idv-config` 
 #      `sed -i "s/^.*repo=.*$/repo=https://github.com/intel/linux-intel-lts.git/" ./.idv-config` 
 #      sed -i 's/^.*repo=.*$/repo=\"https://github.com/intel/linux-intel-lts.git\"/' ./.idv-config 

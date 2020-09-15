@@ -45,7 +45,7 @@ echo "cdir : $0"
 source ./scripts/kernel-config.sh
 echo "build: patches: $patches"
 
-#exit 0
+exit 0
 #================================================
 # Pull Kernel and Compile
 #================================================
