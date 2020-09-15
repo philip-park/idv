@@ -35,25 +35,46 @@ function kernel_options() {
 "${kernel_repo[@]}" \
     3>&1 1>&2 2>&3 )
 
+  # Replace or add with updated repo and branch information
   for (( i=0; i<${#kernel_repo[@]}; i += 4 )); do
-      echo "($i), o: $option, k: ${kernel_repo[$i]}"
     if [[ $option == ${kernel_repo[$i]} ]]; then
-#      echo "[$i], ${kernel_repo[$((i+1))]//\//\\/}"
-#      test=${ernel_repo[$((i+1))]//\//\\/}
       if grep -qF "repo=" $idv_config_file; then
         sed -i "s/^repo=.*$/repo=${kernel_repo[$((i+1))]//\//\\/}/" $idv_config_file
-        sed -i "s/^branch=.*$/branch=${kernel_repo[$((i+3))]//\//\\/}/" $idv_config_file
-#        sed -i "s/^.*repo=.*$/repo=${kernel_repo[$((i+1))]//\//\\/}/" $idv_config_file
-#        echo "found kkkk: $?"
       else
-        echo "repo=${kernel_repo[$((i+1))]//\//\\/}/" >> $idv_config_file
-#        echo "not found kkkk: $?"
+        echo "repo=${kernel_repo[$((i+1))]}" >> $idv_config_file
       fi
-
-#      `sed -i "s/^.*repo=.*$/repo=${kernel_repo[$((i+1))]//\//\\/}/" $idv_config_file`
-#      echo "retun code: $?"
+      if grep -qF "branch=" $idv_config_file; then
+        sed -i "s/^branch=.*$/branch=${kernel_repo[$((i+3))]//\//\\/}/" $idv_config_file
+      else
+        echo "branch=${kernel_repo[$((i+3))]}" >> $idv_config_file
+      fi
     fi
   done
+
+  #================================================================
+  # CCG build needs patches, find patches from current directory
+  if [[ $option == "CCG-repo" ]]; then
+    # get list of patch files
+    idx=0
+    while IFS=$'\n' read -r line; do
+      [[ $line == $patches ]] && list+=($idx "$line" on) || list+=($idx "$line" off)
+      idx=$((idx+1))
+    done < <(ls *.tar.gz | grep patch)
+
+    # display the option to user
+    option_patch=$(dialog --backtitle "Select patches file" \
+            --radiolist "<patches file name>.tar.gz \n\
+Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
+            "${list[@]}" \
+            3>&1 1>&2 2>&3 )
+    [[ -z $option_patch ]] && patches="" || patches=${list[$((option_patch*3+1))]}
+
+    if grep -qF "patches=" $idv_config_file; then
+      sed -i "s/^patches=.*$/patches=$patches/" $idv_config_file
+    else
+      echo "patches=" >> $idv_config_file
+    fi
+  fi
 exit 0
   case $option in
     IOTG-repo)
