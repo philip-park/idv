@@ -11,7 +11,7 @@ idv_config_file=./.idv-config
 source $default_config
 
 #==========================================
-# Set "on" once default found in kernel_repo
+# Set default kernel repo 
 #==========================================
 function set_default_url() {
   #default_repo=$(grep repo $default_config)
@@ -20,6 +20,36 @@ function set_default_url() {
     [[ ${kernel_repo[$((i+1))]} == $repo ]] && \
           kernel_repo[$((i+2))]="on" 
   done
+}
+
+#================================================================
+# CCG build needs patches, find patches from current directory
+#================================================================
+function get_patch_file() {
+  echo "parameter: ($#), [patches: $patches]"
+#  [[ $# -eq 1 ]] && option=$1 || exit 1
+
+  # build the options for dialogget list of patch files in currect directory
+  list+=(0 "No Patches" on)
+  idx=1
+  while IFS=$'\n' read -r line; do
+    [[ $line == $patches ]] && list+=($idx "$line" on) || list+=($idx "$line" off)
+    idx=$((idx+1))
+  done < <(ls *.tar.gz | grep patch)
+
+  # display the option to user
+  option_patch=$(dialog --backtitle "Select patches file" \
+            --radiolist "<patches file name>.tar.gz \n\
+Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
+            "${list[@]}" \
+            3>&1 1>&2 2>&3 )
+  [[ -z $option_patch || $option_patch -eq "0" ]] && patches="" || patches=${list[$((option_patch*3+1))]}
+
+  if grep -qF "patches=" $idv_config_file; then
+    sed -i "s/^patches=.*$/patches=$patches/" $idv_config_file
+  else
+    echo "patches=" >> $idv_config_file
+  fi
 }
 
 function kernel_options() {
@@ -50,75 +80,12 @@ function kernel_options() {
       fi
     fi
   done
-
-  #================================================================
-  # CCG build needs patches, find patches from current directory
-  if [[ $option == "CCG-repo" ]]; then
-    # get list of patch files
-    idx=0
-    while IFS=$'\n' read -r line; do
-      [[ $line == $patches ]] && list+=($idx "$line" on) || list+=($idx "$line" off)
-      idx=$((idx+1))
-    done < <(ls *.tar.gz | grep patch)
-
-    # display the option to user
-    option_patch=$(dialog --backtitle "Select patches file" \
-            --radiolist "<patches file name>.tar.gz \n\
-Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
-            "${list[@]}" \
-            3>&1 1>&2 2>&3 )
-    [[ -z $option_patch ]] && patches="" || patches=${list[$((option_patch*3+1))]}
-
-    if grep -qF "patches=" $idv_config_file; then
-      sed -i "s/^patches=.*$/patches=$patches/" $idv_config_file
-    else
-      echo "patches=" >> $idv_config_file
-    fi
-  fi
-exit 0
-  case $option in
-    IOTG-repo)
-
-  test=${test//\//\\/}
-
-#      `sed -i "s/^.*repo=.*$/repo/" ./.idv-config` 
-#      `sed -i "s/^.*repo=.*$/repo=https://github.com/intel/linux-intel-lts.git/" ./.idv-config` 
-#      sed -i 's/^.*repo=.*$/repo=\"https://github.com/intel/linux-intel-lts.git\"/' ./.idv-config 
-unset repo
-      echo 'export repo="https://github.com/intel/linux-intel-lts.git"' >> ./temp
-      echo 'export branch="lts-v5.4.57-yocto-200819T072823Z"' >> ./temp
-      echo 'export patches=""' >> ./temp
-
-      ;;
-    CCG-repo)
-      echo 'export repo="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"' >> ./temp
-      echo 'export branch="v5.4.54"' >> ./temp
-#    patches="idv3.0_er3_patchset_rbhe"
-
-      # Handle patch file
-      idx=0
-      while IFS=$'\n' read -r line; do
-        [[ $line == $patches ]] && list+=($idx "$line" on) || list+=($idx "$line" off)
-        idx=$((idx+1))
-      done < <(ls *.tar.gz | grep patch)
-
-      option_patch=$(dialog --backtitle "Select patches file" \
-            --radiolist "<patches file name>.tar.gz \n\
-Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
-            "${list[@]}" \
-            3>&1 1>&2 2>&3 )
-        [[ -z $option_patch ]] && patches="" || patches=${list[$((option_patch*3+1))]}
-      ;;
-  esac
-
-  echo "export patches=$patches" >> ./temp
-  echo "$patches"
-#  return 3 
 }
 
 rm ./temp; touch ./temp
 set_default_url
-patches=$(kernel_options)
+kernel_options
+get_patch_file
 source ./temp
 echo "results: patches: '$result', $patches"
 #exit 0
