@@ -38,18 +38,16 @@ echo "cdir : $0"
 #repo="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
 #branch="v5.4.54"
 #patches="idv3.0_er3_patchset_rbhe"
-#kdir="kernel"
-
-#krevision="3.0"
-#kversion="intelgvt"
+kdir="kernel"
+krevision="3.0"
+kversion="intelgvt"
 source ./scripts/kernel-config.sh
 echo "build: patches: $patches"
 
-exit 0
 #================================================
 # Pull Kernel and Compile
 #================================================
-source ./.idv-config
+#source ./.idv-config
 source ./scripts/build-helper
 
 #source . `dirname $0`/simple_curses.sh

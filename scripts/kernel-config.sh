@@ -8,14 +8,27 @@ kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off \
 default_config=./scripts/idv-config-default
 idv_config_file=./.idv-config
 [[ -f "./.idv-config" ]] && default_config="./.idv-config" 
-source $default_config
+
+while IFS=$'\n' read -r line; do
+  case $line in
+    repo=*)
+      repo=${line##*=}
+      ;;
+    branch=*)
+      branch=${line##*=}
+      ;;
+    patches=*)
+      patches=${line##*=}
+      ;;
+  esac
+done < "$default_config"
+echo "new repo: $repo"
+
 
 #==========================================
 # Set default kernel repo 
 #==========================================
 function set_default_url() {
-  #default_repo=$(grep repo $default_config)
-
   for (( i=0; i<${#kernel_repo[@]}; i=i+4 )); do
     [[ ${kernel_repo[$((i+1))]} == $repo ]] && \
           kernel_repo[$((i+2))]="on" 
@@ -27,14 +40,16 @@ function set_default_url() {
 #================================================================
 function get_patch_file() {
   echo "parameter: ($#), [patches: $patches]"
-#  [[ $# -eq 1 ]] && option=$1 || exit 1
 
   # build the options for dialogget list of patch files in currect directory
-  list+=(0 "No Patches" on)
+  [[ -z $patches ]] && list+=(0 "No Patches" on) || list+=(0, "No Patches" off)
   idx=1
   while IFS=$'\n' read -r line; do
+echo "parameter: ($#), [patches: $patches] l: $line"
+    [[ $line == $patches ]] && echo "string is same- l:$line, p:$patches" || echo "string not same l:$line, p:$patches"
     [[ $line == $patches ]] && list+=($idx "$line" on) || list+=($idx "$line" off)
     idx=$((idx+1))
+#exit 0
   done < <(ls *.tar.gz | grep patch)
 
   # display the option to user
@@ -80,13 +95,25 @@ function kernel_options() {
       fi
     fi
   done
+
+  echo "$option"
 }
 
-rm ./temp; touch ./temp
 set_default_url
-kernel_options
-get_patch_file
-source ./temp
+
+kernel_source="$(kernel_options)"
+
+# IOTG build shouldn't need patch
+if [[ $kernel_source == "CCG-repo" ]]; then
+  get_patch_file
+else
+  if grep -qF "patches=" $idv_config_file; then
+    sed -i "s/^patches=.*$/patches=/" $idv_config_file
+  else
+    echo "patches=" >> $idv_config_file
+  fi
+fi
+
 echo "results: patches: '$result', $patches"
 #exit 0
 #kernel_config=(repo branch patches kdir krevision kversion)
