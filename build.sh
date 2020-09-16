@@ -25,14 +25,8 @@ version="0.7"
 cdir=$(pwd)
 echo "cdir : $0"
 #================================================
-# repo, branch, patches, kdir, krevision, kversion
+# Clean the mess it made
 #================================================
-kdir="kernel"
-krevision="3.0"
-kversion="intelgvt"
-source ./scripts/kernel-config.sh
-echo "build: patches: $patches"
-
 function clean() {
   [[ -d "$cdir/$kdir" && ! -z "$kdir" ]] && echo "kdir: $cdir/$kdir"
   [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && echo "patches: $cdir/$patches"
@@ -47,6 +41,15 @@ function clean() {
   rm -rf $cdir/*.deb
 }
 [[ "$1" == "clean" ]] && clean && exit 0
+
+#================================================
+# repo, branch, patches, kdir, krevision, kversion
+#================================================
+kdir="kernel"
+krevision="3.0"
+kversion="intelgvt"
+source ./scripts/kernel-config.sh
+echo "build: patches: $patches"
 
 #================================================
 # Pull Kernel and Compile
