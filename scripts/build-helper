@@ -45,13 +45,13 @@
 # Cleaning
 # Usage:  $ ./idv.sh clean
 #================================================
-function clean() {
-  [[ -d "$cdir/$kdir" && ! -z "$kdir" ]] && rm -rf $cdir/$kdir
-  [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && rm -rf $cdir/$patches
-  [ -d "$cdir/ubuntu-package" ] && rm -rf $cdir/ubuntu-package
-  rm -rf $cdir/*.deb
-}
-[[ "$1" == "clean" ]] && clean && exit 0
+#function clean() {
+#  [[ -d "$cdir/$kdir" && ! -z "$kdir" ]] && rm -rf $cdir/$kdir
+#  [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && rm -rf $cdir/$patches
+#  [ -d "$cdir/ubuntu-package" ] && rm -rf $cdir/ubuntu-package
+#  rm -rf $cdir/*.deb
+#}
+#[[ "$1" == "clean" ]] && clean && exit 0
 
 #================================================
 # Output current status
@@ -160,10 +160,12 @@ function compile_kernel() {
 ( cd $kdir && CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers )
 }
 
-#install_packages
-#add_modules
-#pull_kernel
-#apply_patches
-#kernel_config
-#compile_kernel
+
+install_packages
+add_modules
+cp -a /usr/share/kernel-package $cdir/ubuntu-package
+pull_kernel
+apply_patches
+kernel_config
+compile_kernel
 

@@ -7,23 +7,15 @@ kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off \
 
 default_config=./scripts/idv-config-default
 idv_config_file=./.idv-config
-[[ -f "./.idv-config" ]] && default_config="./.idv-config" 
+[[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
 
 while IFS=$'\n' read -r line; do
   case $line in
-    repo=*)
-      repo=${line##*=}
-      ;;
-    branch=*)
-      branch=${line##*=}
-      ;;
-    patches=*)
-      patches=${line##*=}
-      ;;
+    repo=*) repo=${line##*=} ;;
+    branch=*) branch=${line##*=} ;;
+    patches=*) patches=${line##*=} ;;
   esac
 done < "$default_config"
-echo "new repo: $repo"
-
 
 #==========================================
 # Set default kernel repo 
@@ -37,21 +29,27 @@ function set_default_url() {
 
 #================================================================
 # CCG build needs patches, find patches from current directory
+# case 1) $patch_file=0 and $patches=0 ====> use No Patches
+# case 2) $patch file=1 and $patches=0 ====> use $patch_file
+# case 3) $patch_file=1 and $patches=1 ====> use matching pair, no match, then No Patches
 #================================================================
 function get_patch_file() {
-  echo "parameter: ($#), [patches: $patches]"
-
+#---------------------------------
   # build the options for dialogget list of patch files in currect directory
-  [[ -z $patches ]] && list+=(0 "No Patches" on) || list+=(0, "No Patches" off)
+#-------------------------------
+  files=( *.tar.gz )
+  # case 1, no patch found
+  [[ $patch_file == '*.tar.gz' ]] && list+=(0 "No Patches" on) || list+=(0 "No Patches" off)
   idx=1
-  while IFS=$'\n' read -r line; do
-echo "parameter: ($#), [patches: $patches] l: $line"
-    [[ $line == $patches ]] && echo "string is same- l:$line, p:$patches" || echo "string not same l:$line, p:$patches"
-    [[ $line == $patches ]] && list+=($idx "$line" on) || list+=($idx "$line" off)
+  for patch_file in "${files[@]}"; do
+    echo "loop: $patch_file"
+    # case 2, only one patch file found
+    [[ ${#files[@]} -eq 1 ]] && list+=($idx "$patch_file" on) && break 
+    # case 3, file name matches existing setting in $patches
+    [[ $patch_file == $patches ]] && list+=($idx "$patch_file" on) || list+=($idx "$patch_file" off)
     idx=$((idx+1))
-#exit 0
-  done < <(ls *.tar.gz | grep patch)
-
+  done
+#-------------------------------
   # display the option to user
   option_patch=$(dialog --backtitle "Select patches file" \
             --radiolist "<patches file name>.tar.gz \n\
@@ -60,14 +58,17 @@ Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
             3>&1 1>&2 2>&3 )
   [[ -z $option_patch || $option_patch -eq "0" ]] && patches="" || patches=${list[$((option_patch*3+1))]}
 
-  if grep -qF "patches=" $idv_config_file; then
-    sed -i "s/^patches=.*$/patches=$patches/" $idv_config_file
-  else
-    echo "patches=" >> $idv_config_file
-  fi
+  (grep -qF "patches=" $idv_config_file) \
+    && sed -i "s/^patches=.*$/patches=$patches/" $idv_config_file \
+    ||    echo "patches=$patches" >> $idv_config_file
 }
 
+#================================================================
+# Pickup the user selection of kernel repo
+#================================================================
 function kernel_options() {
+
+  set_default_url
 
   option=$( dialog --item-help --backtitle "Kernel URL selection" \
     --radiolist "Kernel can be pulled from two different sources, IOTG and CCG repo\n\
@@ -99,7 +100,7 @@ function kernel_options() {
   echo "$option"
 }
 
-set_default_url
+#set_default_url
 
 kernel_source="$(kernel_options)"
 
@@ -107,12 +108,15 @@ kernel_source="$(kernel_options)"
 if [[ $kernel_source == "CCG-repo" ]]; then
   get_patch_file
 else
-  if grep -qF "patches=" $idv_config_file; then
-    sed -i "s/^patches=.*$/patches=/" $idv_config_file
-  else
-    echo "patches=" >> $idv_config_file
-  fi
+  (grep -qF "patches=" $idv_config_file) \
+      && sed -i "s/^patches=.*$/patches=/" $idv_config_file \
+      || echo "patches=" >> $idv_config_file
 fi
+
+#==============================================
+# Source the latest configuration
+#==============================================
+source $idv_config_file
 
 echo "results: patches: '$result', $patches"
 #exit 0

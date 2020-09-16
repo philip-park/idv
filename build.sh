@@ -27,40 +27,32 @@ echo "cdir : $0"
 #================================================
 # repo, branch, patches, kdir, krevision, kversion
 #================================================
-# iotg repo: "https://github.com/intel/linux-intel-lts.git"
-# iotg idv branch/tag: "lts-v5.4.57-yocto-200819T072823Z"
-#repo="https://github.com/intel/linux-intel-lts.git"
-#branch="lts-v5.4.57-yocto-200819T072823Z"
-#patches=""
-
-# ccp repo: "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
-# ccp idv branch/tag: "v5.4.54"
-#repo="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
-#branch="v5.4.54"
-#patches="idv3.0_er3_patchset_rbhe"
 kdir="kernel"
 krevision="3.0"
 kversion="intelgvt"
 source ./scripts/kernel-config.sh
 echo "build: patches: $patches"
 
+function clean() {
+  [[ -d "$cdir/$kdir" && ! -z "$kdir" ]] && echo "kdir: $cdir/$kdir"
+  [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && echo "patches: $cdir/$patches"
+  [[ -d "$cdir/ubuntu-package" ]] && echo "ubuntu-package: $cdir/ubuntu-package"
+  echo   "deb: $cdir/*.deb"
+
+  return 0
+
+  [[ -d "$cdir/$kdir" && ! -z "$kdir" ]] && rm -rf $cdir/$kdir
+  [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && rm -rf $cdir/$patches
+  [ -d "$cdir/ubuntu-package" ] && rm -rf $cdir/ubuntu-package
+  rm -rf $cdir/*.deb
+}
+[[ "$1" == "clean" ]] && clean && exit 0
+
 #================================================
 # Pull Kernel and Compile
 #================================================
 #source ./.idv-config
 source ./scripts/build-helper
-
-#source . `dirname $0`/simple_curses.sh
-exit 0
-
-
-install_packages
-add_modules
-cp -a /usr/share/kernel-package $cdir/ubuntu-package
-pull_kernel
-apply_patches
-kernel_config
-compile_kernel
 
 #================================================
 # Setup Kernel command line option in /etc/default/grub
