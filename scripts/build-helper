@@ -63,10 +63,10 @@ echo "repo:         ${green}$repo${NC}"
 echo "branch:       ${green}$branch${NC}"
 
 
-if [ -d "$patches" ]; then
+if [ -d "${patches%.tar.gz}" ]; then
   # if patches directory exists
-  echo "${green} -- patching from a $patches directory ...${NC}"
-  echo "patches:      ${green}$patches directory${NC}"
+  echo "${green} -- patching from a ${patches%.tar.gz} directory ...${NC}"
+  echo "patches:      ${green}${patches%.tar.gz} directory${NC}"
 elif [ ! -z "$patches" ]; then
   # if .tar.gz file exists
   echo "${green} -- patching from $patches ...${NC}"
@@ -123,20 +123,20 @@ function pull_kernel() {
 # 5) Apply patches if specified
 #================================================
 function apply_patches() {
-if [ -d "$patches" ]; then
+if [ -d "${patches%.tar.gz}" ]; then
   # if patches directory exists
-  echo "${green} -- patching from a $patches directory ...${NC}"
+  echo "${green} -- patching from a ${patches%.tar.gz} directory ...${NC}"
 
   ( cd $kdir && git reset --hard )
-  git apply --directory=$kdir $cdir/$patches/*
+  git apply --directory=$kdir $cdir/${patches%.tar.gz}/*
 
-elif [ -f "$patches.tar.gz" ]; then
+elif [ -f "$patches" ]; then
   # if .tar.gz file exists
-  echo "${green} -- patching from $patches.tar.gz ...${NC}"
+  echo "${green} -- patching from $patches file ...${NC}"
 
-  tar xzvf $cdir/$patches.tar.gz
+  tar xzvf $cdir/${patches%.tar.gz}
   ( cd $kdir && git reset --hard )
-  git apply --directory=$kdir $cdir/$patches/*
+  git apply --directory=$kdir $cdir/${patches%.tar.gz}/*
 else
   echo "${green} -- No patches is applied ...${NC}"
 fi
@@ -167,5 +167,6 @@ cp -a /usr/share/kernel-package $cdir/ubuntu-package
 pull_kernel
 apply_patches
 kernel_config
+exit 0
 compile_kernel
 
