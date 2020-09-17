@@ -23,11 +23,39 @@ NC=`tput sgr0`
 ###################################################################
 version="0.7"
 cdir=$(pwd)
-echo "cdir : $0"
+echo "${green}Current working directory : $cdir${NC}"
+kdir="kernel"
+krevision="3.0"
+kversion="intelgvt"
+
+
+default_config=./scripts/idv-config-default
+idv_config_file=./.idv-config
+[[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
+
+function set_global_variables() {
+while IFS=$'\n' read -r line; do
+  case $line in
+    repo=*) repo=${line##*=} ;;
+    branch=*) branch=${line##*=} ;;
+    patches=*) patches=${line##*=} ;;
+  esac
+done < "$default_config"
+}
+
 #================================================
 # Clean the mess it made
 #================================================
 function clean() {
+
+  set_global_variables
+  [[ -d $cdir/$kdir && ! -z "$kdir" ]] && echo "safe to deleted: $cdir/$kdir" || echo "can't deleted $cdir/$kdir"
+  [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && echo "patches: $cdir/$patches"
+  [[ -d "$cdir/ubuntu-package" ]] && echo "ubuntu-package: $cdir/ubuntu-package"
+  echo   "deb: $cdir/*.deb"
+
+  return 0
+
   [[ -d "$cdir/$kdir" && ! -z "$kdir" ]] && echo "kdir: $cdir/$kdir"
   [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && echo "patches: $cdir/$patches"
   [[ -d "$cdir/ubuntu-package" ]] && echo "ubuntu-package: $cdir/ubuntu-package"
@@ -45,9 +73,6 @@ function clean() {
 #================================================
 # repo, branch, patches, kdir, krevision, kversion
 #================================================
-kdir="kernel"
-krevision="3.0"
-kversion="intelgvt"
 source ./scripts/kernel-config.sh
 echo "build: patches: $patches"
 
