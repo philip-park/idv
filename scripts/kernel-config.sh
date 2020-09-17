@@ -119,8 +119,5 @@ fi
 source $idv_config_file
 
 echo "results: patches: '$result', $patches"
-#exit 0
-#kernel_config=(repo branch patches kdir krevision kversion)
-#source $default_config
  
 

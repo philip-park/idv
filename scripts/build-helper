@@ -89,6 +89,7 @@ read -p "Press <Enter> key to continue"
 # 2) Install packages to compile the kernel
 #================================================
 function install_packages() {
+  echo "${green}Installing packages needed.. may take some time.${NC}"
 sudo -s <<RUNASSUDO_PACKAGE
   apt-get autoremove -y &>/dev/null
   apt-get install -y liblz4-tool kernel-package libelf-dev build-essential git libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server net-tools kernel-package &>/dev/null
@@ -100,6 +101,7 @@ RUNASSUDO_PACKAGE
 function add_modules() {
 modules=(kvmgt vfio-iommu-type1 vfio-mdev vfio-pci)
 
+  echo "${green}Adding kernel modules.${NC}"
 for i in "${modules[@]}"
   do
     echo $i
