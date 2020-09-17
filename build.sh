@@ -49,9 +49,12 @@ done < "$default_config"
 function clean() {
 
   set_global_variables
-  [[ -d $cdir/$kdir && ! -z "$kdir" ]] && echo "safe to deleted: $cdir/$kdir" || echo "can't deleted $cdir/$kdir"
-  [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && echo "patches: $cdir/$patches"
-  [[ -d "$cdir/ubuntu-package" ]] && echo "ubuntu-package: $cdir/ubuntu-package"
+#  [[ -d $cdir/$kdir && ! -z "$kdir" ]] && echo "safe to deleted: $cdir/$kdir" || echo "can't deleted $cdir/$kdir"
+  [[ -d $cdir/$kdir && ! -z "$kdir" ]] && find $kdir -type d -name "$kdir" -exec rm -rf {} +
+  [[ -d "$cdir/${patches%.tar.gz}" && ! -z "$patches" ]] && echo "safe to delete: $cdir/$patches" || echo "can't delete $cdir/$patches"
+  [[ -d "$cdir/${patches%.tar.gz}" && ! -z "$patches" ]] && find ${patches%.tar.gz} -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
+  [[ -d "$cdir/ubuntu-package" ]] && find ubuntu-package -type d -name "ubuntu-package" -exec rm -rf {} +
+  find *.deb -type f -name "*.deb" -exec rm -rf {} +
   echo   "deb: $cdir/*.deb"
 
   return 0

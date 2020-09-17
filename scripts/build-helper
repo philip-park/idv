@@ -167,6 +167,5 @@ cp -a /usr/share/kernel-package $cdir/ubuntu-package
 pull_kernel
 apply_patches
 kernel_config
-exit 0
 compile_kernel
 
