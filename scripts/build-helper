@@ -134,7 +134,7 @@ elif [ -f "$patches" ]; then
   # if .tar.gz file exists
   echo "${green} -- patching from $patches file ...${NC}"
 
-  tar xzvf $cdir/${patches%.tar.gz}
+  tar xzvf $cdir/$patches
   ( cd $kdir && git reset --hard )
   git apply --directory=$kdir $cdir/${patches%.tar.gz}/*
 else
