@@ -3,6 +3,9 @@ opts=(i915.enable_gvt=1 kvm.ignore_msrs=1 intel_iommu=on,igfx_off drm.debug=0 co
 
 cmd_line="`grep -w "GRUB_CMDLINE_LINUX" /etc/default/grub`"
 cmd_line=${cmd_line#*'"'}; cmd_line=${cmd_line%'"'*}
+echo "cmd_line: $cmd_line"
+exit 0
+
 
 replace=false
 for i in "${opts[@]}"
