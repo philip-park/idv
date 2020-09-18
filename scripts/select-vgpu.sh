@@ -73,6 +73,7 @@ function set_display_port_mask() {
       port_num=$(sed 's/.*(\(.*\))/\1/' <<< "${temp}")
 #      list="$test $list, ($port_num)"
       port_mask="0$((1<<(port_num-1)))"$port_mask
+      update_idv_config "VGPU$i" "`uuid`"
       detected=1
     fi
   done
@@ -83,29 +84,8 @@ function set_display_port_mask() {
 }
 
 set_display_port_mask
-exit 0
 select_mdev_type
-exit 0
 
-mdev_type=$(select_mdev)
-node=($(ls /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/))
-echo "mdev-typs selected: ${green}${node[$((mdev_type-1))]}${NC}"
-echo "--mdev_type: $mdev_type"
-
-#get_display_port_mask
-exit 0
-
-mask=$(get_display_port_mask)
-echo "port_mask: $mask"
-exit 0
-
-
-
-get_display_port
-exit 0
-
-select_mdev
-exit 0
 
 
 
