@@ -54,7 +54,7 @@ function clean() {
 #  [[ -d $vmdir ]] && find $vmroot -type d -name "$vmdir" -exec rm -rf {} +
 
 
-find "$vmroot" -name vm -type d -exec rm -r {} +
+find "$vmroot" -name "$vmdir" -type d -exec rm -r {} +
 
 }
 
