@@ -22,78 +22,70 @@ NC=`tput sgr0`
 # Require:
 # scripts/custom-function for selectWithDefault
 #===========================================
+idv_config_file=./test
+function update_idv_config() {
+  variable=$1
+  string=$2
 
-function select_mdev() {
-  node=($(ls /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/))
-  # This actually the total number of available node and set to default node
-  current_option=${#res[@]}
-
-  # set to default option
-  [ "$current_option" > 2 ] && current_option=2
-
-  for i in ${!node[@]}; do
-    res="`grep resolution /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/${node[$i]}/description`"
-    if [ "$current_option" -eq "$i" ]; then
-      opts[$i]="${green}${node[$i]} (${res#* })${NC}"
-    else
-      opts[$i]="${node[$i]} (${res#* })"
-    fi
-  done
-
-  source scripts/custom-function
-  choice=$(selectWithDefault "${opts[@]}")
-  [ -z "${choice}" ] && choice=$((current_option+1))
-
-  echo "$choice"
+  (grep -qF "$variable=" $idv_config_file) \
+      && sed -i "s/^$variable=.*$/$variable=${string//\//\\/}/" $idv_config_file \
+      || echo "$variable=$string" >> $idv_config_file
 }
 
+function select_mdev_type() {
+  mdev_type=( /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/i915-GVTg_V5_* )
+  # This actually the total number of available node and set to default node
+  current_option=${#mdev_type[@]}
 
-card0="/sys/devices/pci0000:00/0000:00:02.0/drm/card0"
-function get_display_port_mask() {
-  port_mask=0
-  status="`grep "Available display ports" $card0/gvt_disp_ports_status`"
+  # set to default option
+  [[ "$current_option" > 2 ]] && current_option=2
 
-  opts="${status#*: }"
+  for (( i=0; i<${#mdev_type[@]}; i++ )); do
+    resolution="`grep resolution ${mdev_type[$i]}/description`"
+    [[ $current_option -eq "$i" ]] \
+        && list+=(${mdev_type[$i]##*/} "(${resolution##* })" on "${mdev_type[$i]}") \
+        || list+=(${mdev_type[$i]##*/} "(${resolution##* })" off "${mdev_type[$i]}")
+  done
 
-  # Detect ports
+  mdev_type_option=$(dialog --item-help --backtitle "Select patches file" \
+            --radiolist "<patches file name>.tar.gz \n\
+Select the mdev type from the following list found in ~/mdev_supported_types."  20 80 10 \
+            "${list[@]}" \
+            3>&1 1>&2 2>&3 )
+
+  update_idv_config "mdev_type" "$mdev_type_option"
+}
+
+function set_display_port_mask() {
+  card0=( /sys/devices/pci0000\:00/0000\:00\:02.0/drm/card0/gvt_disp_ports_status )
+  available_ports=$(grep "Available display ports" $card0)
+  ports="${available_ports#*: }"
+
   detected=0
+#  list=""
+  port_mask=""
   for (( i=0; i<8; i++)); do
-    test=$((opts&0xf))
-    opts=$((opts>>4))
-    if [ "$test" -ne "0" ]; then
-      string="`grep -A $i "Available" /sys/devices/pci0000:00/0000:00:02.0/drm/card0/gvt_disp_ports_status`"
-      string="`grep -oP '(?<= )\w+' <<< "${string##*$'\n'}"`"
+    nibble=$((ports&0xf)); ports=$((ports>>4))
+
+    if [[ $nibble -ne "0" ]]; then
+      string="`grep -A $i "Available" $card0`"  # ( PORT_B(2) )
+      temp=$(sed 's/.*( \(.*\) )/\1/' <<< "${string##*$'\n'}")
+      port_num=$(sed 's/.*(\(.*\))/\1/' <<< "${temp}")
+#      list="$test $list, ($port_num)"
+      port_mask="0$((1<<(port_num-1)))"$port_mask
       detected=1
     fi
   done
+  port_mask=0x$port_mask
+  #printf "\x$(printf %08x  $port_mask)"
 
-  # creat port mask for gvt_disp_ports_mask
-  if [ "$detected" ]; then
-    val=()
-    read -p "Enter mask (e.g. 42, 34, 432): " mask && [[ -z "$mask" ]] && mask=00000002
-    if [ "$mask" -ne "0" ]; then
-      for (( i=0; i<${#mask}; i++)); do
-        port=$((16#${mask:(${#mask}-1-$i):1}))
-        case $port in
-          0) break;;
-          1) val[$i]=01;;
-          2) val[$i]=02;;
-          3) val[$i]=04;;
-          4) val[$i]=08;;
-          *) break;;
-        esac
-
-      done
-    fi
-    port_mask="${val[2]}${val[1]}${val[0]}"
-  fi
-  echo "$port_mask"
+  update_idv_config "port_mask" "$port_mask"
 }
 
-mask=$(get_display_port_mask)
-echo "port_mask: $mask"
+set_display_port_mask
 exit 0
-
+select_mdev_type
+exit 0
 
 mdev_type=$(select_mdev)
 node=($(ls /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/))
@@ -103,6 +95,9 @@ echo "--mdev_type: $mdev_type"
 #get_display_port_mask
 exit 0
 
+mask=$(get_display_port_mask)
+echo "port_mask: $mask"
+exit 0
 
 
 
