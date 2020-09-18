@@ -46,26 +46,14 @@ done < "$default_config"
 #================================================
 # Clean the mess it made
 #================================================
-
-function remove_packages() {
-sudo -s <<RUNASSUDO_PACKAGE
-  apt-get autoremove -y &>/dev/null
-  apt-get install -y liblz4-tool kernel-package libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server net-tools kernel-package 
-#&>/dev/null
-RUNASSUDO_PACKAGE
-}
-
-
 function clean() {
 
   set_global_variables
-  remove_packages
 
-  [[ -d $cdir/$kdir && ! -z "$kdir" ]] && find $kdir -type d -name "$kdir" -exec rm -rf {} +
-  [[ -d "$cdir/${patches%.tar.gz}" && ! -z "$patches" ]] && find ${patches%.tar.gz} -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
-  [[ -d "$cdir/ubuntu-package" ]] && find ubuntu-package -type d -name "ubuntu-package" -exec rm -rf {} +
-  find *.deb -type f -name "*.deb" -exec rm -rf {} +
-  echo   "deb: $cdir/*.deb"
+  find . -type d -name "$kdir" -exec rm -rf {} +
+  find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
+  find . -type d -name "ubuntu-package" -exec rm -rf {} +
+  find . -type f -name "*.deb" -exec rm -rf {} +
 }
 
 [[ "$1" == "clean" ]] && clean && exit 0
