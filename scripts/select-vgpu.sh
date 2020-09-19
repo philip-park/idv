@@ -22,8 +22,8 @@ NC=`tput sgr0`
 # Require:
 # scripts/custom-function for selectWithDefault
 #===========================================
-idv_config_file=./test
-function update_idv_config() {
+#idv_config_file=./test
+function update_idv_config_1() {
   variable=$1
   string=$2
 

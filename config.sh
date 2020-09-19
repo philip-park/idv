@@ -28,10 +28,11 @@ kdir="kernel"
 krevision="3.0"
 kversion="intelgvt"
 
+source scripts/util.sh
 
-default_config=./scripts/idv-config-default
-idv_config_file=./.idv-config
-[[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
+#default_config=./scripts/idv-config-default
+#idv_config_file=./.idv-config
+#[[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
 
 function set_global_variables() {
 while IFS=$'\n' read -r line; do

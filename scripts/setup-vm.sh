@@ -1,16 +1,5 @@
 #!/bin/bash
 
-red=`tput setaf 1`
-green=`tput setaf 2`
-yellow=`tput setaf 3`
-blue=`tput setaf 4`
-magenta=`tput setaf 5`
-cyan=`tput setaf 6`
-white=`tput setaf 7`
-blink=`tput blink`
-NC=`tput sgr0`
-
-
 
 vm_dir=/var/vm
 
@@ -18,6 +7,15 @@ vm_dir=/var/vm
 #[[ ! -d $vm_dir ]] && sudo mkdir $vm_dir
 
 
+# Install qemu
+sudo apt install qemu-system-x86
+sudo cp /usr/share/qemu/bios.bin $vm_dir/fw
+sudo cp /usr/share/qemu/OVMF.fd $vm_dir/fw
 
+
+cat <<EOF > /var/vm/install-guest.sh
+#!/bin/bash
+
+EOF
 
 

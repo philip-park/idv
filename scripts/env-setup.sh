@@ -27,7 +27,7 @@ exit 0
 
 
 # Install qemu
-sudo apt install qemu-system-x86
-cp /usr/share/qemu/bios.bin ~/vm/fw
-cp /usr/share/qemu/OVMF.fd ~/vm/fw
+#sudo apt install qemu-system-x86
+#cp /usr/share/qemu/bios.bin ~/vm/fw
+#cp /usr/share/qemu/OVMF.fd ~/vm/fw
 
