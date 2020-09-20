@@ -4,8 +4,10 @@
 vm_dir=/var/vm
 
 (mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts})
+declare -a usb_devs
+source scripts/util.sh
 
-function get_qemu_user_option() {
+function get_qemu_firmware_option() {
   fw=( $vm_dir/fw/* )
 
   for i in ${fw[@]}; do
@@ -25,7 +27,59 @@ function get_qemu_user_option() {
   update_idv_config "FW" "$choices"
 }
 
-get_qemu_user_option
+
+function find_attached_port() {
+local vid="$1"
+local pid="$2"
+local usb_port=""
+
+for sysdevpath in $(find /sys/bus/usb/devices/usb*/ -name idVendor); do
+  if [[ `cat $sysdevpath` == "$vid" ]]; then
+    usb_port=${sysdevpath%/idVendor*}
+    if [[ `cat $usb_port/idProduct` == "$pid" ]]; then
+      usb_port=${usb_port##*/}
+      break
+    fi
+  fi
+done
+
+echo "$usb_port"
+}
+
+function get_qemu_usb_option() {
+  local array options
+  local n=0
+  O_IFS=$IFS
+  IFS=$'\n'
+
+  while read f; do options+=($n "$f" "off"); n=$((n+1)); done < <(lsusb)
+
+  cmd=(dialog --checklist "Hi, this is the checklist box. this is test check list" 40 100 13)
+  options=(${options[@]})
+  choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+
+  IFS=${O_IFS}
+  for choice in $choices
+  do
+    idx=$((choice*3+1))
+    IFS=' ' read -ra usbinfo <<< "${options[$idx]}"
+    IFS=':' read vid pid <<< "${usbinfo[5]}"
+    usb_port=$(find_attached_port $vid $pid)
+    #if [[ "$usb_port" ]]; then
+    IFS=$'-' read bus port <<< "$usb_port"
+    if [[ "$port" ]]; then
+      qemu_option+=("-device usb-host,hostbus=$bus,hostport=$port")
+#      echo "qemu_option: ${qemu_option[@]}"
+#      echo "bus: $bus, port: $port, $usb_port"
+    fi
+    #fi
+  done
+  IFS=${O_IFS}
+  echo "qemu_option: ${qemu_option[@]}"
+  update_idv_config "QEMU_USB" "${qemu_option[@]}"
+}
+get_qemu_firmware_option
+get_qemu_usb_option
 
 exit 0
 
