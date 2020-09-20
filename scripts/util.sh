@@ -12,3 +12,14 @@ function update_idv_config() {
       || echo "$variable=$string" >> $idv_config_file
 }
 
+function run_as_root() {
+  cmd=$1
+  if [[ $EUID -eq 0 ]];then
+    ($cmd)
+  else
+    sudo -s <<RUNASSUDO_PACKAGE
+    ($cmd)
+   fi
+}
+
+
