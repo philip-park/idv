@@ -25,7 +25,8 @@ function clean() {
 #================================================
 # VGPU mask setting based on mdev_type user input
 #================================================
-source scripts/setup-vm.sh
+source scripts/select-vgpu.sh
+#source scripts/setup-vm.sh
 source scripts/qemu-setup.sh
 
 exit 0

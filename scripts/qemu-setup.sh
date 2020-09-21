@@ -24,7 +24,9 @@ function get_qemu_firmware_option() {
   options=(${options[@]})
   choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
-  update_idv_config "FW" "$choices"
+  for (( i=0; i<${#options[@]}; $((i+=3)) )); do
+    [[ $choices == ${options[$i]} ]] && update_idv_config "FW" "${options[$((i+1))]}"
+  done
 }
 
 
@@ -67,23 +69,14 @@ function get_qemu_usb_option() {
     IFS=' ' read -ra usbinfo <<< "${options[$idx]}"
     IFS=':' read vid pid <<< "${usbinfo[5]}"
     usb_port=$(find_attached_port $vid $pid)
-    #if [[ "$usb_port" ]]; then
     IFS=$'-' read bus port <<< "$usb_port"
     if [[ "$port" ]]; then
       qemu_option+=("-device usb-host,hostbus=$bus,hostport=$port")
-#      echo "qemu_option: ${qemu_option[@]}"
-#      echo "bus: $bus, port: $port, $usb_port"
-#      [[ $new_option -eq 0 ]] && new_option=0 \
-#        && update_idv_config "QEMU_USB" "-device usb-host,hostbus=$bus,hostport=$port" && $((i+=1)) 
-#        || update_idv_config_concatenate "QEMU_USB" "-device usb-host,hostbus=$bus,hostport=$port"
-
-
     fi
-    #fi
   done
   IFS=${O_IFS}
   echo "qemu_option: ${qemu_option[@]}"
-  update_idv_config "QEMU_USB" "${qemu_option[@]}"
+  update_idv_config "QEMU_USB" "\"${qemu_option[@]}\""
 }
 get_qemu_firmware_option
 get_qemu_usb_option
