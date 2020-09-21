@@ -57,7 +57,11 @@ function build_install_qemu_batch() {
   temp+=( "-enable-kvm \\" )
   temp+=( "-name ubuntu-guest \\" )
   temp+=( "-boot d \\" )
-  temp+=( "-cdrom $cdir/ubuntu18.iso \\" )
+
+  opt=($(grep "GUEST_ISO=" $idv_config_file))
+ 
+
+  temp+=( "-cdrom $cdir/$opt \\" )
   temp+=( "-drive file=$vm_dir/disk/ubuntu18-ovmf.qcow2 \\" )
   fw_opt=($(grep "FW=" $idv_config_file))
 
@@ -104,13 +108,46 @@ function build_start_qemu_batch() {
   $(rm temp_file)
 }
 
+_iso_="$cdir/iso/*.iso"
+QEMU_IMG="/usr/bin/qemu-img"
 function get_user_option() {
+  isofiles=( $_iso_ )
 
+  echo "iso: ${isofiles[@]}"
+
+  [[ ${isofiles[0]} == "$_iso_" ]] && update_idv_config "GUEST_ISO" "" \
+    && dialog --msgbox "Cant find ISO files in $cdir/iso\n\n" 10 40 && exit 1
+
+  for (( i=0; i<${#isofiles[@]}; i++ )); do
+    list+=($i "${isofiles[$i]##*\/}" off "${isofiles[$i]}")
+    echo "($i)list: ${list[@]}"
+  done
+
+  cmd=(dialog --item-help --radiolist "Please choose ISO files from ./iso for your guest OS." 30 80 5)
+  list=(${list[@]})
+  choices=$("${cmd[@]}" "${list[@]}" 2>&1 >/dev/tty)
+
+  [[ $? -eq 1 ]] && exit 0    # cancel pressed
+
+  echo "choices: $choices, cmd: $?"
+
+  for (( i=0; i<${#list[@]}; $((i+=4)) )); do
+    echo "($i): ${list[$i]}"
+    if [[ $choices == ${list[$i]} ]]; then
+      update_idv_config "GUEST_ISO" "${list[$((i+3))]}"
+      ($QEMU_IMG create -f qcow2 temp.qcow2 60G)
+      run_as_root "mv temp.qcow2 $vm_dir/disk/${list[$((i+1))]%%.*}.qcow2"
+      update_idv_config "GUEST_QCOW2" "$vm_dir/disk/${list[$((i+1))]%%.*}.qcow2"
+    fi
+  done
 }
 
-
 create_vm_dir
+get_user_option
+
 build_fw_directory
 build_create_vgpu
 build_install_qemu_batch
 build_start_qemu_batch
+
+
