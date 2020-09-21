@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source scripts/util.sh
 #================================================
 # text attributes ####
 #================================================
@@ -79,7 +80,7 @@ grub_setup
 echo -en '\n'
 echo "${green}To Install Kernel: \"sudo dpkg -i *.deb\"${NC}"
 
-sudo -s <<RUNASSUDO_PACKAGE
-  apt-get install -y qemu-system-x86
-RUNASSUDO_PACKAGE
+#sudo -s <<RUNASSUDO_PACKAGE
+  run_as_root "apt-get install -y qemu-system-x86"
+#RUNASSUDO_PACKAGE
 

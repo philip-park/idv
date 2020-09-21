@@ -49,11 +49,11 @@ done < "$default_config"
 #================================================
 
 function remove_packages() {
-sudo -s <<RUNASSUDO_PACKAGE
-  apt-get autoremove -y &>/dev/null
-  apt-get remove -y liblz4-tool kernel-package libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server net-tools kernel-package 
+#sudo -s <<RUNASSUDO_PACKAGE
+  run_as_root "apt-get autoremove -y &>/dev/null"
+  run_as_root "apt-get remove -y liblz4-tool kernel-package libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server net-tools kernel-package"
 #&>/dev/null
-RUNASSUDO_PACKAGE
+#RUNASSUDO_PACKAGE
 }
 
 function clean() {
