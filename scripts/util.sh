@@ -3,19 +3,12 @@ idv_config_file=./.idv-config
 [[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
 
 function update_idv_config() {
-  variable=$1
-  string=$2
   opt=("$@")
   string=${opt[@]:1}
-echo "update: o:$variable, s: $string"
   (grep -qF "${opt[0]}=" $idv_config_file) \
       && sed -i "s/^${opt[0]}=.*$/${opt[0]}=${string//\//\\/}/" $idv_config_file \
       || echo "${opt[0]}=${string[@]}" >> $idv_config_file
-#  (grep -qF "$variable=" $idv_config_file) \
-#      && sed -i "s/^$variable=.*$/$variable=${string//\//\\/}/" $idv_config_file \
-#      || echo "$variable=$string" >> $idv_config_file
 }
-update_idv_config "QEMU_USB" "tesst, test"
 
 function update_idv_config_concatenate() {
   str=$(grep $1 $idv_config_file)
