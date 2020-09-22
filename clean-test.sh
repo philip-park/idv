@@ -51,7 +51,7 @@ done < "$default_config"
 
 function remove_packages() {
   run_as_root "apt-get autoremove -y &>/dev/null"
-  run_as_root "apt-get remove -y liblz4-tool kernel-package libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex  kernel-package"
+  run_as_root "apt-get remove -y qemu-system-x86 liblz4-tool kernel-package libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex  kernel-package"
 #&>/dev/null
 }
 
@@ -60,6 +60,11 @@ function clean() {
 
   set_global_variables
   remove_packages
+
+  sudo cp grub /etc/default/
+  sudo cp modules /etc/initramfs-tools/
+
+  sudo cp modules /etc/initramfs
 
   find . -type d -name "$kdir" -exec rm -rf {} +
   find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-vm_dir=/var/vm
+#vm_dir=/var/vm
 
-(mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts})
+#(mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts})
 declare -a usb_devs
 source scripts/util.sh
 

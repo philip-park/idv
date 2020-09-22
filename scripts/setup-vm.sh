@@ -55,14 +55,16 @@ function build_install_qemu_batch() {
   temp+=( "/usr/local/bin/qemu-system-x86_64 \\" )
   temp+=( "-m 4096 -smp 1 -M q35 \\" )
   temp+=( "-enable-kvm \\" )
-  temp+=( "-name install-qemu \\" )
+
+  qcow_opt=($(grep "GUEST_QCOW2=" $idv_config_file))
+  temp+=( "-name  ${qcow_opt##*/} \\" )
   temp+=( "-boot d \\" )
 
   opt=($(grep "GUEST_ISO=" $idv_config_file))
   temp+=( "-cdrom ${opt##*=} \\" )
 
-  opt=($(grep "GUEST_QCOW2=" $idv_config_file))
-  temp+=( "-drive file=${opt##*=} \\" )
+#  qcow_opt=($(grep "GUEST_QCOW2=" $idv_config_file))
+  temp+=( "-drive file=${qcow_opt##*=} \\" )
 
   fw_opt=($(grep "FW=" $idv_config_file))
   temp+=( "-bios ${fw_opt#*=} \\" )
@@ -90,11 +92,12 @@ IFS=$'\n'
   temp+=( "/usr/bin/qemu-system-x86_64 \\" )
   temp+=( "-m 4096 -smp 1 -M q35 \\" )
   temp+=( "-enable-kvm \\" )
-  temp+=( "-name ubuntu-guest \\" )
 
-  opt=($(grep "GUEST_QCOW2=" $idv_config_file))
-#  temp+=( "-drive file=${opt##*=} \\" )
-  temp+=( "-hda ${opt##*=} \\" )
+  qcow_opt=($(grep "GUEST_QCOW2=" $idv_config_file))
+  temp+=( "-name  ${qcow_opt##*/} \\" )
+
+#  opt=($(grep "GUEST_QCOW2=" $idv_config_file))
+  temp+=( "-hda ${qcow_opt##*=} \\" )
 
   fw_opt=($(grep "FW=" $idv_config_file))
   temp+=( "-bios ${fw_opt#*=} \\" )

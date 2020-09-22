@@ -43,9 +43,10 @@ done < "$default_config"
 #================================================
 # Clean the mess it made
 #================================================
-function clean() {
+function clean_deleteme() {
 
-  set_global_variables
+  [[ -f $idv_config_file ]] && echo "found" && source $idv_config_file || exit 0
+#  set_global_variables
 
   find . -type d -name "$kdir" -exec rm -rf {} +
   find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +

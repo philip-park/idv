@@ -16,19 +16,6 @@ NC=`tput sgr0`
 source scripts/util.sh
 cdir=$(pwd)
 
-function clean() {
-
-  set_global_variables
-  remove_packages
-
-
-  find . -type d -name "$kdir" -exec rm -rf {} +
-  find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
-  find . -type d -name "ubuntu-package" -exec rm -rf {} +
-  find . -type f -name "*.deb" -exec rm -rf {} +
-
-}
-
 [[ "$1" == "clean" ]] && clean && exit 0
 
 
@@ -36,6 +23,7 @@ function clean() {
 # VGPU mask setting based on mdev_type user input
 #================================================
 #source scripts/select-vgpu.sh
+make_var_vm
 source scripts/setup-vm.sh
 
 exit 0
