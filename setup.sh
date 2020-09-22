@@ -23,7 +23,7 @@ cdir=$(pwd)
 # VGPU mask setting based on mdev_type user input
 #================================================
 #source scripts/select-vgpu.sh
-make_var_vm
+build_vm_directory
 source scripts/setup-vm.sh
 
 exit 0
