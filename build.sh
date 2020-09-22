@@ -73,10 +73,9 @@ source ./scripts/build-helper
 source scripts/grub-setup.sh
 grub_setup
 
+run_as_root "apt-get install -y qemu-system-x86"
+
 echo -en '\n'
 echo "${green}To Install Kernel: \"sudo dpkg -i *.deb\"${NC}"
 
-#sudo -s <<RUNASSUDO_PACKAGE
-  run_as_root "apt-get install -y qemu-system-x86"
-#RUNASSUDO_PACKAGE
 
