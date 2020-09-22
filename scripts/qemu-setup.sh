@@ -76,7 +76,7 @@ function get_qemu_usb_option() {
   done
   IFS=${O_IFS}
   echo "qemu_option: ${qemu_option[@]}"
-  update_idv_config "QEMU_USB" "\"${qemu_option[@]}\""
+  update_idv_config "QEMU_USB" "${qemu_option[@]}"
 }
 get_qemu_firmware_option
 get_qemu_usb_option
