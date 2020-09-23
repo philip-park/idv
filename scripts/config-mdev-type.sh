@@ -11,7 +11,7 @@ blink=`tput blink`
 NC=`tput sgr0`
 
 #===========================================
-# select_mdev node
+# select_mdev type
 # locate and list the node for user to select.
 # The default will be display in Green color
 # i915-GVTg_V5_1 (1920x1200)
@@ -22,16 +22,6 @@ NC=`tput sgr0`
 # Require:
 # scripts/custom-function for selectWithDefault
 #===========================================
-#idv_config_file=./test
-function update_idv_config_1() {
-  variable=$1
-  string=$2
-
-  (grep -qF "$variable=" $idv_config_file) \
-      && sed -i "s/^$variable=.*$/$variable=${string//\//\\/}/" $idv_config_file \
-      || echo "$variable=$string" >> $idv_config_file
-}
-
 function select_mdev_type() {
   mdev_type=( /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/i915-GVTg_V5_* )
   # This actually the total number of available node and set to default node
@@ -70,7 +60,7 @@ function set_display_port_mask() {
       string="`grep -A $i "Available" $card0`"  # ( PORT_B(2) )
       temp=$(sed 's/.*( \(.*\) )/\1/' <<< "${string##*$'\n'}")
 
-gfx_port+=( "$temp" )
+vgpu_port+=( "$temp" )
 echo "0port status temp: $temp"
       port_num=$(sed 's/.*(\(.*\))/\1/' <<< "${temp}")
 echo "1port status temp: $temp"
@@ -80,11 +70,10 @@ echo "2port status temp: $temp"
       detected=1
     fi
   done
-  echo "gfx_port: ${gfx_port[@]}"
-  update_idv_config "GFX_PORT" "${gfx_port[@]}"
+  update_idv_config "VGPU_PORT" "${vgpu_port[@]}"
   update_idv_config "port_mask" "0x$port_mask"
 }
 
-set_display_port_mask
-#select_mdev_type
+#set_display_port_mask
+select_mdev_type
 

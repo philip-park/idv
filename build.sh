@@ -17,7 +17,6 @@ kdir="kernel"
 krevision="3.0"
 kversion="intelgvt"
 
-
 function set_global_variables_deleteme() {
 while IFS=$'\n' read -r line; do
   case $line in
@@ -29,39 +28,44 @@ done < "$default_config"
 }
 
 #================================================
-# Clean the mess it made
+# Check whether .idv-config file exists
+# The .idv-config file is created by config.sh.
 #================================================
-function clean_deleteme() {
-O_IFS=${IFS}
-IFS=$'\n'
-  [[ -f $idv_config_file ]] && echo "found" && source $idv_config_file || exit 0
-#  set_global_variables
-IFS=${O_IFS}
-  find . -type d -name "$kdir" -exec rm -rf {} +
-  find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
-  find . -type d -name "ubuntu-package" -exec rm -rf {} +
-  find . -type f -name "*.deb" -exec rm -rf {} +
-}
-
-[[ "$1" == "clean" ]] && clean && exit 0
-
+echo "idv config file: $idv_config_file"
+#[[ -f "$idv_config_file" ]] && echo "exist" || echo "not exists"
+if [[ ! -f "$idv_config_file" ]];then
+  printf "\n${yellow}Please run config.sh file...\n\n${NC}"
+  exit 0
+fi
 
 #================================================
-# repo, branch, patches, kdir, krevision, kversion
+# Check validity of the repo and branch
 #================================================
 repo=($(grep "repo=" $idv_config_file))
 branch=($(grep "branch=" $idv_config_file))
+printf "\n"
+if [[ -z $repo || -z $branch ]]; then
+  echo "repo/branch is not set"
+fi
 
-echo "repo: ${repo##*repo=}, branch: ${branch##*branch=}"
-#[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && echo -en '\n\n';  printf "\n${red}Please run config.sh file${NC}\n\n"; exit 0
-[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && source ./scripts/config-kernel.sh
+if [[ -z "${repo##*repo=}" || -z "${branch##*=}" ]]; then
+  printf "${yellow}Empty repo/branch setting. Please run the config.sh.${NC}\n"
+  exit 0
+fi
+
+
+#[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && source ./scripts/config-kernel.sh
+
+#================================================
+# Clean up the IDV
+#================================================
+[[ "$1" == "clean" ]] && clean && exit 0
 
 #================================================
 # Pull Kernel and Compile
 #================================================
 source $idv_config_file
 source ./scripts/build-helper
-
 
 #================================================
 # Setup Kernel command line option in /etc/default/grub

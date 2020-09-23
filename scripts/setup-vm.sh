@@ -139,7 +139,7 @@ function get_user_option() {
   echo "iso: ${isofiles[@]}"
 
   [[ ${isofiles[0]} == "$_iso_" ]] && update_idv_config "GUEST_ISO" "" \
-    && dialog --msgbox "Cant find ISO files in $cdir/iso\n\n" 10 40 && exit 1
+    && dialog --msgbox "Can't find ISO files in $cdir/iso. Please download guest OS ISO file to $cdir/iso\n\n" 10 40 && exit 1
 
   for (( i=0; i<${#isofiles[@]}; i++ )); do
     list+=($i "${isofiles[$i]##*\/}" off "${isofiles[$i]}")

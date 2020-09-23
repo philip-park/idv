@@ -17,10 +17,11 @@ NC=`tput sgr0`
 #=================================
 vmroot=/var
 vmdir="$vmroot/vm"
+cdir=$(pwd)
 
 default_config=./scripts/idv-config-default
-idv_config_file=./.idv-config
-[[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
+idv_config_file="$cdir/.idv-config"
+[[ -f "$idv_config_file" ]] && default_config="$idv_config_file" || touch $idv_config_file
 
 function update_idv_config() {
   opt=("$@")
@@ -69,6 +70,7 @@ echo "make var vm"
 #================================================
 function clean() {
   [[ -f $idv_config_file ]] && source $idv_config_file || exit 0
+echo "clean idv"
   run_as_root "find /var -type d -name "vm" -exec rm -rf {} +"
   [[ ! -z "$kdir" ]] && find . -type d -name "$kdir" -exec rm -rf {} +
   [[ ! -z "$patches" ]] && find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +

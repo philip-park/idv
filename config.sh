@@ -6,42 +6,57 @@ source scripts/util.sh
 ###################################################################
 
 
-
 [[ "$1" == "clean" ]] && clean && exit 0
-install_packages
-build_vm_directory
+function run_all() {
+#install_packages
+#build_vm_directory
 
-source scripts/config-kernel.sh
+#source scripts/config-kernel.sh
 #================================================
 # VGPU mask setting based on mdev_type user input
 #================================================
-source scripts/config-select-vgpu.sh
-source scripts/config-qemu-setup.sh
-
+#source scripts/config-select-vgpu.sh
+source $cdir/scripts/config-mdev-type.sh
+#source scripts/config-qemu-setup.sh
+}
 function config_main() {
 
+# Detect GFX port and update VGPU, GFX_PORT, port_mask
+source $cdir/scripts/config-select-vgpu.sh
+gfx_port=$(grep GFX_PORT $idv_config_file)
+vgpu_port=$(grep VGPU $idv_config_file)
 
-cmd=(dialog --keep-tite --menu "Select options:" 22 76 16)
-options=(1 "Kernel Configure"
-         2 "Guest OS 1 configure"
-         3 "Guest OS 2 configure"
-         4 "Guest OS 3 configure")
+echo "gfx: ${gfx_port[0]}, vgpu: ${vgpu_port[0]}"
 
-choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
+list+=( 1 "Kernel option config (for Kernel build.sh)" )
+#for i in ${#gfx_port[@]}; do
+for (( i=0; i<${#gfx_port[@]}; i++ )); do
+  list+=( $((i+2)) "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
+done
+  list+=( $((i+2)) "Exit config menu" )
 
-for choice in $choices
-do
-    case $choice in
-        1) source ./scripts/config-kernel.sh ;;
-        2) 
+while true ; do
+
+  # display the option to user
+  option=$(dialog --keep-tite --menu "Select configuration options" 20 80 10 \
+            "${list[@]}" \
+            3>&1 1>&2 2>&3 )
+
+  [[ $? -eq 1 ]] && break
+
+  echo "option: $option, cmd: $?"
+
+  case $option in
+
+    1) echo "source ./scripts/config-kernel.sh" ;;
+    2) echo "source ./scripts/config-qemu-setup.sh"
             echo "Second Option"
             ;;
-        3)
-            echo "Third Option"
+    3)        echo "third Option"
+        break
             ;;
-        4)
-            echo "Fourth Option"
-            ;;
-    esac
+  esac
+
 done
 }
+config_main
