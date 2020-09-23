@@ -54,15 +54,7 @@ branch=($(grep "branch=" $idv_config_file))
 
 echo "repo: ${repo##*repo=}, branch: ${branch##*branch=}"
 #[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && echo -en '\n\n';  printf "\n${red}Please run config.sh file${NC}\n\n"; exit 0
-[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && source ./scripts/kernel-config.sh
-
-#echo "temp; $temp"
-#echo "idv config: $idv_config_file, repo: $repo"
-
-#[[ ! -f $idv_config_file ]] && echo "Please run config.sh file" && exit 1
-
-#source ./scripts/kernel-config.sh
-echo "build: patches: $patches"
+[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && source ./scripts/config-kernel.sh
 
 #================================================
 # Pull Kernel and Compile
