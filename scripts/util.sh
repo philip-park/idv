@@ -68,12 +68,11 @@ echo "make var vm"
 # Clean the mess it made
 #================================================
 function clean() {
-
   [[ -f $idv_config_file ]] && source $idv_config_file || exit 0
   run_as_root "find /var -type d -name "vm" -exec rm -rf {} +"
-  [[ ! -z "$kdir" ]] && run_as_root "find . -type d -name "$kdir" -exec rm -rf {} +"
-  [[ ! -z "$patches" ]] && run_as_root "find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +"
-  run_as_root "find . -type d -name "ubuntu-package" -exec rm -rf {} +"
-  run_as_root "find . -type f -name "*.deb" -exec rm -rf {} +"
+  [[ ! -z "$kdir" ]] && find . -type d -name "$kdir" -exec rm -rf {} +
+  [[ ! -z "$patches" ]] && find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
+  find . -type d -name "ubuntu-package" -exec rm -rf {} +
+  find . -type f -name "*.deb" -exec rm -rf {} +
 }
 
