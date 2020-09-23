@@ -1,9 +1,9 @@
 #!/bin/bash
 
-kernel_repo+=("CCG-repo" "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git" off \
-              "v5.4.54")
-kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off \
-              "lts-v5.4.57-yocto-200819T072823Z")
+#kernel_repo+=("CCG-repo" "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git" off \
+#              "v5.4.54")
+#kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off \
+#              "lts-v5.4.57-yocto-200819T072823Z")
 
 default_config=./scripts/idv-config-default
 idv_config_file=./.idv-config
@@ -37,7 +37,10 @@ function get_patch_file() {
 #---------------------------------
   # build the options for dialogget list of patch files in currect directory
 #-------------------------------
+
   files=( *.tar.gz )
+
+  local -a list=()
   # case 1, no patch found
   [[ $patch_file == '*.tar.gz' ]] && list+=(0 "No Patches" on) || list+=(0 "No Patches" off)
   idx=1
@@ -69,7 +72,7 @@ Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
 function kernel_options() {
 
   set_default_url
-
+#  unset option
   option=$( dialog --item-help --backtitle "Kernel URL selection" \
     --radiolist "Kernel can be pulled from two different sources, IOTG and CCG repo\n\
 *IOTG repo: IOTG kernel development team maintains kernel with IDV patches\n\
