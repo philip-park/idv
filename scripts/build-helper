@@ -79,6 +79,8 @@ done
 # 4) Pull the kernel source
 #================================================
 function pull_kernel() {
+#echo "repo: $repo"
+#source $idv_config_file
 [[ ! -d "$cdir/$kdir" ]] && git clone --depth 1 $repo --branch $branch --single-branch $kdir
 }
 
@@ -122,12 +124,11 @@ echo "${green}--- Appling kernel config ...${NC}"
 function compile_kernel() {
 ( cd $kdir && CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers )
 }
-exit 0
 install_packages
 add_modules
 cp -a /usr/share/kernel-package $cdir/ubuntu-package
 pull_kernel
 apply_patches
 kernel_config
-#compile_kernel
+compile_kernel
 

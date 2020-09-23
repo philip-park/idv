@@ -32,10 +32,11 @@ done < "$default_config"
 # Clean the mess it made
 #================================================
 function clean_deleteme() {
-
+O_IFS=${IFS}
+IFS=$'\n'
   [[ -f $idv_config_file ]] && echo "found" && source $idv_config_file || exit 0
 #  set_global_variables
-
+IFS=${O_IFS}
   find . -type d -name "$kdir" -exec rm -rf {} +
   find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
   find . -type d -name "ubuntu-package" -exec rm -rf {} +
@@ -44,17 +45,31 @@ function clean_deleteme() {
 
 [[ "$1" == "clean" ]] && clean && exit 0
 
+
 #================================================
 # repo, branch, patches, kdir, krevision, kversion
 #================================================
-source ./scripts/kernel-config.sh
+repo=($(grep "repo=" $idv_config_file))
+branch=($(grep "branch=" $idv_config_file))
+
+echo "repo: ${repo##*repo=}, branch: ${branch##*branch=}"
+#[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && echo -en '\n\n';  printf "\n${red}Please run config.sh file${NC}\n\n"; exit 0
+[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && source ./scripts/kernel-config.sh
+
+#echo "temp; $temp"
+#echo "idv config: $idv_config_file, repo: $repo"
+
+#[[ ! -f $idv_config_file ]] && echo "Please run config.sh file" && exit 1
+
+#source ./scripts/kernel-config.sh
 echo "build: patches: $patches"
 
 #================================================
 # Pull Kernel and Compile
 #================================================
-#source ./.idv-config
+source $idv_config_file
 source ./scripts/build-helper
+
 
 #================================================
 # Setup Kernel command line option in /etc/default/grub
