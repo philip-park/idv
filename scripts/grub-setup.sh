@@ -1,25 +1,32 @@
 #!/bin/bash
-grub_file="/etc/default/grub"
+
+grubfile="/etc/default/grub"
+tempfile="./temp"
+
 function grub_setup() {
 opts=(i915.enable_gvt=1 kvm.ignore_msrs=1 intel_iommu=on,igfx_off drm.debug=0 consoleblank=0)
 
-cmd_line="`grep -w "GRUB_CMDLINE_LINUX" $grub_file`"
-cmd_line=${cmd_line#*'"'}; cmd_line=${cmd_line%'"'*}
+  cp -f $grubfile $tempfile
 
-replace=false
-for i in "${opts[@]}"
-  do
-    lst="`grep -w "GRUB_CMDLINE_LINUX" $grub_file | grep -w $i`"
-    if [ -z "$lst" ];then
-      cmd_line="$cmd_line $i"
-      replace=true
+  cmdline="`grep -w "GRUB_CMDLINE_LINUX=" $tempfile`"
+  cmdline=${cmdline##*GRUB_CMDLINE_LINUX=} # Capture strings after "GRUB_CMDLINE_LINUX="
+  cmdline="${cmdline%\"}"   # Remove the suffix "
+
+  grub_modified=0
+  for i in "${opts[@]}"; do
+    if !(grep -q $i <<< "$cmdline"); then
+      grub_modified=1
+      [[ $cmdline == "\"" ]] && cmdline="$cmdline$i" || cmdline="$cmdline $i"
     fi
-done
+  done
 
-if [ "$replace" = true ];
-then
-  cmd_line="GRUB_CMDLINE_LINUX=\"$cmd_line\""
-  sed -i "/.*GRUB_CMDLINE_LINUX=.*/c $cmd_line" $grub_file
-#  sudo update-grub2
-fi
+  if [[ $grub_modified -eq 1 ]]; then
+    cmdline="GRUB_CMDLINE_LINUX=$cmdline\""
+    sed -i "/.*GRUB_CMDLINE_LINUX=.*/c $cmdline" $tempfile
+    run_as_root "cp -f $tempfile $grubfile"
+    run_as_root "update-grub2"
+  fi
+  rm -f $tempfile
 }
+
+grub_setup

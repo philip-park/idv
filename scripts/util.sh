@@ -1,4 +1,7 @@
 
+#================================================
+# text attributes ####
+#================================================
 red=`tput setaf 1`
 green=`tput setaf 2`
 yellow=`tput setaf 3`
@@ -8,6 +11,12 @@ cyan=`tput setaf 6`
 white=`tput setaf 7`
 blink=`tput blink`
 NC=`tput sgr0`
+
+#=================================
+# global variable shared among scripts
+#=================================
+vmroot=/var
+vmdir="$vmroot/vm"
 
 default_config=./scripts/idv-config-default
 idv_config_file=./.idv-config
@@ -39,11 +48,21 @@ function install_packages() {
 # &>/dev/null
 }
 
-function make_var_vm() {
-vm_dir=/var/vm
-echo "make var vm"
-run_as_root "mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts}"
+function build_fw_directory() {
+  run_as_root "apt-get install -y qemu-system-x86"
+
+  [[ -f /usr/share/qemu/bios.bin ]] && run_as_root "cp /usr/share/qemu/bios.bin $vmdir/fw" \
+      || echo "Error: can't find /usr/share/qemu/bios.bin file"
+  [[ -f /usr/share/qemu/OVMF.fd ]] && run_as_root "cp /usr/share/qemu/OVMF.fd $vmdir/fw" \
+      || echo "Error: can't find /usr/share/qemu/OVMF.fd file"
 }
+
+function build_vm_directory() {
+echo "make var vm"
+  run_as_root "mkdir -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}"
+  build_fw_directory
+}
+
 
 #================================================
 # Clean the mess it made

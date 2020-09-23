@@ -19,7 +19,6 @@ source scripts/util.sh
 [[ "$1" == "clean" ]] && clean && exit 0
 install_packages
 build_vm_directory
-
 #================================================
 # VGPU mask setting based on mdev_type user input
 #================================================

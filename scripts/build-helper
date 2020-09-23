@@ -1,16 +1,5 @@
 #!/bin/bash -e
 
-#### text attributes ####
-#red=`tput setaf 1`
-#green=`tput setaf 2`
-#yellow=`tput setaf 3`
-#blue=`tput setaf 4`
-#magenta=`tput setaf 5`
-#cyan=`tput setaf 6`
-#white=`tput setaf 7`
-#blink=`tput blink`
-#NC=`tput sgr0`
-
 ###################################################################
 # version : version of the idv.sh file
 # cdir    : pionts to current working directory where idv.sh file runs
@@ -36,22 +25,6 @@
 #repo="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
 #branch="v5.4.54"
 #patches="idv3.0_er3_patchset_rbhe"
-
-#================================================
-# directory where kernel will be pulled and saved ####
-#kdir="kernel"
-
-#================================================
-# Cleaning
-# Usage:  $ ./idv.sh clean
-#================================================
-#function clean() {
-#  [[ -d "$cdir/$kdir" && ! -z "$kdir" ]] && rm -rf $cdir/$kdir
-#  [[ -d "$cdir/$patches" && ! -z "$patches.tar.gz" ]] && rm -rf $cdir/$patches
-#  [ -d "$cdir/ubuntu-package" ] && rm -rf $cdir/ubuntu-package
-#  rm -rf $cdir/*.deb
-#}
-#[[ "$1" == "clean" ]] && clean && exit 0
 
 #================================================
 # Output current status
@@ -84,11 +57,6 @@ echo "=================================================\n"
 echo -en '\n'
 
 read -p "Press <Enter> key to continue"
-
-#================================================
-# 2) Install packages to compile the kernel
-#================================================
-install_packages
 
 #================================================
 # 3) Add modules for KVM/GVTg
@@ -154,8 +122,7 @@ echo "${green}--- Appling kernel config ...${NC}"
 function compile_kernel() {
 ( cd $kdir && CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers )
 }
-
-
+exit 0
 install_packages
 add_modules
 cp -a /usr/share/kernel-package $cdir/ubuntu-package

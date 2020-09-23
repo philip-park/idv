@@ -1,18 +1,6 @@
 #!/bin/bash
 
 source scripts/util.sh
-#================================================
-# text attributes ####
-#================================================
-red=`tput setaf 1`
-green=`tput setaf 2`
-yellow=`tput setaf 3`
-blue=`tput setaf 4`
-magenta=`tput setaf 5`
-cyan=`tput setaf 6`
-white=`tput setaf 7`
-blink=`tput blink`
-NC=`tput sgr0`
 
 ###################################################################
 # version : version of the idv.sh file
@@ -30,7 +18,7 @@ krevision="3.0"
 kversion="intelgvt"
 
 
-function set_global_variables() {
+function set_global_variables_deleteme() {
 while IFS=$'\n' read -r line; do
   case $line in
     repo=*) repo=${line##*=} ;;
@@ -72,7 +60,6 @@ source ./scripts/build-helper
 # Setup Kernel command line option in /etc/default/grub
 #================================================
 source scripts/grub-setup.sh
-grub_setup
 
 run_as_root "apt-get install -y qemu-system-x86"
 
