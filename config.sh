@@ -13,8 +13,13 @@ kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off "lt
 
 
 function run_all() {
+  portinfo="${1%=*}"
+  portinfo="$(echo $portinfo | tr '[:upper:]' '[:lower:]')"
+  echo "run_all: $portinfo"
+  run_as_root "apt install qemu-system-x86"
+  run_as_root "apt install uuid"
 #install_packages
-#build_vm_directory
+build_vm_directory
 
 #source scripts/config-kernel.sh
 #================================================
@@ -22,7 +27,7 @@ function run_all() {
 #================================================
 #source scripts/config-select-vgpu.sh
 source $cdir/scripts/config-mdev-type.sh
-#source scripts/config-qemu-setup.sh
+source scripts/config-qemu-setup.sh
 }
 function config_main() {
 
@@ -31,13 +36,13 @@ function config_main() {
   gfx_port=$(grep GFX_PORT $idv_config_file)
   vgpu_port=$(grep VGPU $idv_config_file)
 
-  echo "gfx: count: (${#gfx_port[@]}), vgpu: ${vgpu_port[0]}"
 
-  mainlist+=( 1 "Kernel option config (for Kernel build.sh)" )
+  mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" )
   for (( i=0; i<${#gfx_port[@]}; i++ )); do
-    mainlist+=( $((i+2)) "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
+    mainlist+=( "${gfx_port[$i]##*=}" "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
+  #  mainlist+=( $((i+2)) "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
   done
-  mainlist+=( $((i+2)) "Exit config menu" )
+  mainlist+=( "Exit" "Exit config menu" )
 
   while true ; do
     opt=$(dialog --keep-tite --menu "Select configuration options" 20 80 10 \
@@ -49,11 +54,12 @@ function config_main() {
 
     case $opt in
 
-      1)  source ./scripts/config-kernel.sh ;;
-      2)  echo "source ./scripts/config-qemu-setup.sh"
+      Kernel)  source ./scripts/config-kernel.sh ;;
+      PORT_B)  echo "source ./scripts/config-qemu-setup.sh"
+          run_all "${vgpu_port[0]}"
             echo "Second Option"
             ;;
-      3)  break ;;
+      Exit)  break ;;
     esac
   done
 }
