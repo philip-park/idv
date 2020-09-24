@@ -39,15 +39,16 @@ function config_main() {
   run_as_root "apt install dialog"
   # Detect GFX port and update VGPU, GFX_PORT, port_mask
   source $cdir/scripts/config-select-vgpu.sh
-  gfx_port=$(grep GFX_PORT $idv_config_file)
-  vgpu_port=$(grep VGPU $idv_config_file)
+  temp=$(grep "GFX_PORT=" $idv_config_file)
+	gfx_port=( ${temp##*=} )
 
-#  source $cdir/scripts/config-mdev-type.sh
+  vgpu_port=( $(grep "VGPU" $idv_config_file) )
 
   mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" )
   mainlist+=( "Mdev" "mdev type option config" )
   for (( i=0; i<${#gfx_port[@]}; i++ )); do
     mainlist+=( "${gfx_port[$i]##*=}" "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
+			echo "$i) gfx: ${gfx_port[$i]}, vgpu: ${vgpu_port[$i]}"
   #  mainlist+=( $((i+2)) "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
   done
   mainlist+=( "Exit" "Exit config menu" )
