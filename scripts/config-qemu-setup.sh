@@ -10,12 +10,11 @@ source scripts/util.sh
 function get_qemu_firmware_option() {
   fw=( $vmdir/fw/* )
   portinfo=$1
+  unset options
 
   for i in ${fw[@]}; do
     temp=${i##*/}
-    echo "temp: $temp"
     temp=${temp%.*}
-    echo "$i, temp: $temp"
     [[ $temp == "OVMF" ]] && options+=("$temp" "$i" on) || options+=("$temp" "$i" off)
   done
   [[ ${options[0]} == '*' ]] && dialog --msgbox \
