@@ -16,18 +16,20 @@ function run_all() {
   portinfo="${1%=*}"
   portinfo="$(echo $portinfo | tr '[:upper:]' '[:lower:]')"
   echo "run_all: $portinfo"
-  run_as_root "apt install qemu-system-x86"
-  run_as_root "apt install uuid"
-#install_packages
-build_vm_directory
 
-#source scripts/config-kernel.sh
-#================================================
-# VGPU mask setting based on mdev_type user input
-#================================================
-#source scripts/config-select-vgpu.sh
-source $cdir/scripts/config-mdev-type.sh
-source scripts/config-qemu-setup.sh
+  # install enough package to start config
+  run_as_root "apt install uuid"
+
+  # install qemu-system-x86 and copy firmware to /var/vm/fw
+  build_vm_directory
+
+  #source scripts/config-kernel.sh
+  #================================================
+  # VGPU mask setting based on mdev_type user input
+  #================================================
+  #source scripts/config-select-vgpu.sh
+#  source $cdir/scripts/config-mdev-type.sh
+  source $cdir/scripts/config-qemu-setup.sh
 }
 function config_main() {
 
@@ -36,8 +38,10 @@ function config_main() {
   gfx_port=$(grep GFX_PORT $idv_config_file)
   vgpu_port=$(grep VGPU $idv_config_file)
 
+#  source $cdir/scripts/config-mdev-type.sh
 
   mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" )
+  mainlist+=( "Mdev" "mdev type option config" )
   for (( i=0; i<${#gfx_port[@]}; i++ )); do
     mainlist+=( "${gfx_port[$i]##*=}" "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
   #  mainlist+=( $((i+2)) "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
@@ -55,6 +59,7 @@ function config_main() {
     case $opt in
 
       Kernel)  source ./scripts/config-kernel.sh ;;
+      Mdev) source $cdir/scripts/config-mdev-type.sh;;
       PORT_B)  echo "source ./scripts/config-qemu-setup.sh"
           run_all "${vgpu_port[0]}"
             echo "Second Option"

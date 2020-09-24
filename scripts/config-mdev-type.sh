@@ -23,6 +23,9 @@ NC=`tput sgr0`
 # scripts/custom-function for selectWithDefault
 #===========================================
 function select_mdev_type() {
+#  unset list
+  local declare -a list=()
+#echo "mdev entgered"
   mdev_type=( /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/i915-GVTg_V5_* )
   # This actually the total number of available node and set to default node
   current_option=${#mdev_type[@]}
@@ -38,7 +41,7 @@ function select_mdev_type() {
   done
 
   mdev_type_option=$(dialog --item-help --backtitle "Select patches file" \
-            --radiolist "<patches file name>.tar.gz \n\
+            --radiolist "Select mdev type to use. Once set it will be used for all guestg OS \n\
 Select the mdev type from the following list found in ~/mdev_supported_types."  20 80 10 \
             "${list[@]}" \
             3>&1 1>&2 2>&3 )
