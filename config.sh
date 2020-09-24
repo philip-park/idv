@@ -14,7 +14,7 @@ kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off "lt
 
 function run_all() {
   portinfo="${1%=*}"
-  portinfo="$(echo $portinfo | tr '[:upper:]' '[:lower:]')"
+#  portinfo="$(echo $portinfo | tr '[:upper:]' '[:lower:]')"
   echo "run_all: $portinfo"
 
   # install enough package to start config
@@ -69,8 +69,6 @@ function config_main() {
         for (( i=0; i<${#gfx_port[@]}; i++ )); do
           [[ "$opt" == "${gfx_port[$i]##*=}" ]] && run_all "${vgpu_port[$i]}"
         done
-#          run_all "${vgpu_port[0]}"
-#            echo "Second Option"
             ;;
       Exit)  break ;;
     esac
