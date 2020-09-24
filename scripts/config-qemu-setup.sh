@@ -9,6 +9,7 @@ source scripts/util.sh
 
 function get_qemu_firmware_option() {
   fw=( $vmdir/fw/* )
+  portinfo=$1
 
   for i in ${fw[@]}; do
     temp=${i##*/}
@@ -25,7 +26,7 @@ function get_qemu_firmware_option() {
   choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
   for (( i=0; i<${#options[@]}; $((i+=3)) )); do
-    [[ $choices == ${options[$i]} ]] && update_idv_config "FW" "${options[$((i+1))]}"
+    [[ $choices == ${options[$i]} ]] && update_idv_config "FW-$portinfo" "${options[$((i+1))]}"
   done
 }
 
@@ -78,8 +79,7 @@ function get_qemu_usb_option() {
   echo "qemu_option: ${qemu_option[@]}"
   update_idv_config "QEMU_USB" "\"${qemu_option[@]}\""
 }
-get_qemu_firmware_option
-get_qemu_usb_option
+#get_qemu_firmware_option
+#get_qemu_usb_option
 
-exit 0
 

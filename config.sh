@@ -30,7 +30,11 @@ function run_all() {
   #source scripts/config-select-vgpu.sh
 #  source $cdir/scripts/config-mdev-type.sh
   source $cdir/scripts/config-qemu-setup.sh
+  get_qemu_firmware_option "$portinfo"
+  get_qemu_usb_option "$portinfo"
 }
+
+
 function config_main() {
 
   # Detect GFX port and update VGPU, GFX_PORT, port_mask
@@ -60,9 +64,12 @@ function config_main() {
 
       Kernel)  source ./scripts/config-kernel.sh ;;
       Mdev) source $cdir/scripts/config-mdev-type.sh;;
-      PORT_B)  echo "source ./scripts/config-qemu-setup.sh"
-          run_all "${vgpu_port[0]}"
-            echo "Second Option"
+      PORT_A|PORT_B|PORT_C|PORT_D)  echo "source ./scripts/config-qemu-setup.sh"
+        for (( i=0; i<${#gfx_port[@]}; i++ )); do
+          [[ "$opt" == "${gfx_port[$i]##*=}" ]] && run_all "${vgpu_port[$i]}"
+        done
+#          run_all "${vgpu_port[0]}"
+#            echo "Second Option"
             ;;
       Exit)  break ;;
     esac
