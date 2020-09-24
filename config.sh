@@ -36,7 +36,7 @@ function run_all() {
 
 
 function config_main() {
-
+  run_as_root "apt install dialog"
   # Detect GFX port and update VGPU, GFX_PORT, port_mask
   source $cdir/scripts/config-select-vgpu.sh
   gfx_port=$(grep GFX_PORT $idv_config_file)
