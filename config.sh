@@ -49,7 +49,6 @@ function config_main() {
   for (( i=0; i<${#gfx_port[@]}; i++ )); do
     mainlist+=( "${gfx_port[$i]##*=}" "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
 			echo "$i) gfx: ${gfx_port[$i]}, vgpu: ${vgpu_port[$i]}"
-  #  mainlist+=( $((i+2)) "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
   done
   mainlist+=( "Exit" "Exit config menu" )
 

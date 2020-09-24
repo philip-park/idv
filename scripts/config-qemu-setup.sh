@@ -51,6 +51,9 @@ echo "$usb_port"
 function get_qemu_usb_option() {
   local array options
   local n=0
+
+  portinfo=$1
+
   O_IFS=$IFS
   IFS=$'\n'
 
@@ -75,8 +78,8 @@ function get_qemu_usb_option() {
     fi
   done
   IFS=${O_IFS}
-  echo "qemu_option: ${qemu_option[@]}"
-  update_idv_config "QEMU_USB" "\"${qemu_option[@]}\""
+#  echo "qemu_option: ${qemu_option[@]}"
+  update_idv_config "QEMU_USB_$portinfo" "\"${qemu_option[@]}\""
 }
 #get_qemu_firmware_option
 #get_qemu_usb_option
