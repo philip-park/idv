@@ -180,10 +180,6 @@ function create_files() {
   vgpuinfo=$1
   echo "temp: $vgpuinfo"
 
-
-#  create_vm_dir
-#  get_user_option "$vgpuinfo"
-
   build_fw_directory
   build_create_vgpu "$vgpuinfo"
   build_install_qemu_batch "$vgpuinfo"

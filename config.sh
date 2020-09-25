@@ -40,7 +40,8 @@ function config_main() {
   # Detect GFX port and update VGPU, GFX_PORT, port_mask
   source $cdir/scripts/config-select-vgpu.sh
   temp=$(grep "GFX_PORT=" $idv_config_file)
-	gfx_port=( ${temp##*=} )
+	temp=( ${temp##*=\"} )
+	gfx_port=( ${temp%\"} )
 
   vgpu_port=( $(grep "VGPU" $idv_config_file) )
 
