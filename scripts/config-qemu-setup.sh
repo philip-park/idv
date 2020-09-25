@@ -66,6 +66,7 @@ function get_qemu_usb_option() {
   IFS=${O_IFS}
   new_option=0
   i=0
+  unset qemu_option
   for choice in $choices
   do
     idx=$((choice*3+1))

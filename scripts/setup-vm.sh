@@ -18,7 +18,7 @@ function build_fw_directory() {
 
 CREATE_VGPU="$vm_dir/create-vgpu"
 INSTALL_GUEST="$vm_dir/install-guest"
-START_GUEST="$vm_dir/start-guest.sh"
+START_GUEST="$vm_dir/start-guest"
 
 gvt_disp_ports_mask="/sys/class/drm/card0/gvt_disp_ports_mask"
 mdev_dir="/sys/bus/pci/devices/0000:00:02.0/mdev_supported_types"
@@ -107,18 +107,12 @@ IFS=$'\n'
   IFS='.' read fname fext <<< "${filename}"
   str+=( "-name  $fname-$low_vgpu \\" )
 
-#  qcow_opt=($(grep "GUEST_QCOW2=" $idv_config_file))
-#  str+=( "-name  ${qcow_opt##*/} \\" )
-
   temp=${qcow_opt##*=}
   str+=( "-hda ${temp%.*}-$low_vgpu.$fext \\" )
-#  opt=($(grep "GUEST_QCOW2=" $idv_config_file))
-#  str+=( "-hda ${qcow_opt##*=} \\" )
 
   fw_opt=($(grep "FW=$vgpu" $idv_config_file))
   str+=( "-bios ${fw_opt##*=} \\" )
 
-#  str+=( "-bios /home/snuc/vm/fw/OVMF-pure-efi.fd \\" )
   str+=( "-cpu host -usb -device usb-tablet \\" )
   str+=( "-vga none \\" )
   str+=( "-k en-us \\" )
@@ -133,16 +127,12 @@ IFS=$'\n'
     opt=($(grep "QEMU_USB" $idv_config_file))
     temp="${opt#*=\"}"
     str+=( ${temp%\"} )
-
-#    str+=( ${opt#*=} )
-#    str+=( $opt )
   fi
 
-#  printf "%s\n"  "${str[@]}"
-  printf "%s\n"  "Creating $START_GUEST file.. "
+  printf "%s\n"  "Creating $START_GUEST-$low_vgpu.sh file.. "
   printf "%s\n"  "${str[@]}" > ./temp_file
-  run_as_root "cp ./temp_file $START_GUEST"
-  run_as_root "chmod +x $START_GUEST"
+  run_as_root "cp ./temp_file $START_GUEST-$low_vgpu.sh"
+  run_as_root "chmod +x $START_GUEST-$low_vgpu.sh"
 IFS=${O_IFS}
   $(rm temp_file)
 }
