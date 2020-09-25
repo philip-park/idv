@@ -12,5 +12,14 @@ cdir=$(pwd)
 build_vm_directory
 source scripts/setup-vm.sh
 
-setup_main
 
+function setup_main() {
+  vgpuinfo=( $( grep "FW_VGPU" $idv_config_file | grep -oP '(?<=_).*(?==)' ) )
+
+#  create_vm_dir
+  get_user_option "$vgpuinfo"
+
+  create_files "$vgpuinfo"
+}
+
+setup_main

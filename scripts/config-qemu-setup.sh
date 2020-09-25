@@ -25,7 +25,7 @@ function get_qemu_firmware_option() {
   choices=$("${cmd[@]}" "${options[@]}" 2>&1 >/dev/tty)
 
   for (( i=0; i<${#options[@]}; $((i+=3)) )); do
-    [[ $choices == ${options[$i]} ]] && update_idv_config "FW=$portinfo" "${options[$((i+1))]}"
+    [[ $choices == ${options[$i]} ]] && update_idv_config "FW_$portinfo" "${options[$((i+1))]}"
   done
 }
 

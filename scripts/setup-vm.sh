@@ -71,7 +71,7 @@ function build_install_qemu_batch() {
   temp=${qcow_opt##*=}
   str+=( "-drive file=${temp%.*}-$low_vgpu.$fext \\" )
 
-  fw_opt=($(grep "FW=$vgpu" $idv_config_file))
+  fw_opt=($(grep "FW_$vgpu" $idv_config_file))
   str+=( "-bios ${fw_opt##*=} \\" )
 
   str+=( "-cpu host -usb -device usb-tablet \\" )
@@ -110,7 +110,7 @@ IFS=$'\n'
   temp=${qcow_opt##*=}
   str+=( "-hda ${temp%.*}-$low_vgpu.$fext \\" )
 
-  fw_opt=($(grep "FW=$vgpu" $idv_config_file))
+  fw_opt=($(grep "FW_$vgpu" $idv_config_file))
   str+=( "-bios ${fw_opt##*=} \\" )
 
   str+=( "-cpu host -usb -device usb-tablet \\" )
@@ -170,28 +170,19 @@ function get_user_option() {
       ($QEMU_IMG create -f qcow2 temp.qcow2 60G)
       run_as_root "mv temp.qcow2 $vm_dir/disk/${list[$((i+1))]%%.*}.qcow2"
       update_idv_config "GUEST_QCOW2_$vgpuinfo" "$vm_dir/disk/${list[$((i+1))]%%.*}.qcow2"
+      run_as_root "rm -f temp.qcow2"
     fi
   done
 }
 
-function setup_main_save() {
-  create_vm_dir
-  get_user_option
 
-  build_fw_directory
-  build_create_vgpu
-  build_install_qemu_batch
-  build_start_qemu_batch
-}
-
-function setup_main() {
-  #temp=( $(grep "FW=vgpu" $idv_config_file) )
-  vgpuinfo=( $( grep "FW=VGPU" $idv_config_file | grep -oP '(?<==).*(?==)' ) )
+function create_files() {
+  vgpuinfo=$1
   echo "temp: $vgpuinfo"
 
 
-  create_vm_dir
-  get_user_option "$vgpuinfo"
+#  create_vm_dir
+#  get_user_option "$vgpuinfo"
 
   build_fw_directory
   build_create_vgpu "$vgpuinfo"
