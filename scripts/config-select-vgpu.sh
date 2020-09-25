@@ -78,7 +78,7 @@ function set_display_port_mask() {
     fi
   done
   echo "gfx_port: ${gfx_port[@]}"
-  update_idv_config "GFX_PORT" "\"${gfx_port[@]}\""
+  update_idv_config "GFX_PORT" "${gfx_port[@]}"
   update_idv_config "port_mask" "0x$port_mask"
 }
 
