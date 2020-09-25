@@ -177,8 +177,8 @@ function get_user_option() {
 
 
 function create_files() {
-  vgpuinfo=$1
-  echo "temp: $vgpuinfo"
+  local vgpuinfo=$1
+  echo "create_file: temp: $vgpuinfo"
 
   build_fw_directory
   build_create_vgpu "$vgpuinfo"

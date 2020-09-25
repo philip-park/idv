@@ -9,17 +9,21 @@ cdir=$(pwd)
 #================================================
 # VGPU mask setting based on mdev_type user input
 #================================================
-build_vm_directory
+#build_vm_directory
 source scripts/setup-vm.sh
 
 
 function setup_main() {
+#  vgpuinfo=( $( grep "FW_VGPU" $idv_config_file ) )
   vgpuinfo=( $( grep "FW_VGPU" $idv_config_file | grep -oP '(?<=_).*(?==)' ) )
 
-#  create_vm_dir
-  get_user_option "$vgpuinfo"
+	for vgpu in ${vgpuinfo[@]}; do
+		echo "i in loop: $vgpu"
 
-  create_files "$vgpuinfo"
+#  create_vm_dir
+	  get_user_option 
+	  create_files "$vgpu"
+  done
 }
 
 setup_main
