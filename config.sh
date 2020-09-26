@@ -39,17 +39,14 @@ function run_all() {
 
 
 function config_main() {
-  run_as_root "apt install dialog"
-  # Detect GFX port and update VGPU, GFX_PORT, port_mask
-  source $cdir/scripts/config-select-vgpu.sh
+  unset mainlist
 
-  temp=($(grep "GFX_PORT=" $idv_config_file))
-	temp="${temp##*=}"
-echo "temp: $temp"
-	gfx_port=( ${temp[@]} )
+  run_as_root "apt install dialog"  # make sure dialog is installed
+  source $cdir/scripts/config-select-vgpu.sh  # get vgpu, gfx port, and port mask info
+
+  gfx_port=($(grep "^GFX_PORT=" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting
   vgpu_port=( $(grep "VGPU" $idv_config_file) )
-echo "gfx: ${gfx_port[@]}, vgpu: ${vgpu_port[@]}"
-#exit 0
+
   mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" )
   mainlist+=( "Mdev" "mdev type option config" )
   for (( i=0; i<${#gfx_port[@]}; i++ )); do
@@ -64,10 +61,7 @@ echo "gfx: ${gfx_port[@]}, vgpu: ${vgpu_port[@]}"
 
     [[ $? -eq 1 ]] && break
 
-    echo "option: $opt, cmd: $?"
-
     case $opt in
-
       Kernel)  source ./scripts/config-kernel.sh ;;
       Mdev) source $cdir/scripts/config-mdev-type.sh;;
       PORT_A|PORT_B|PORT_C|PORT_D)  echo "source ./scripts/config-qemu-setup.sh"
