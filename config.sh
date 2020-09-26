@@ -45,7 +45,7 @@ function config_main() {
   source $cdir/scripts/config-select-vgpu.sh  # get vgpu, gfx port, and port mask info
 
   gfx_port=($(grep "^GFX_PORT=" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting
-  vgpu_port=( $(grep "VGPU" $idv_config_file) )
+  vgpu_port=( $(grep "^VGPU" $idv_config_file) )
 
   mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" )
   mainlist+=( "Mdev" "mdev type option config" )

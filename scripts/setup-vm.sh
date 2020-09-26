@@ -119,14 +119,16 @@ IFS=$'\n'
   str+=( "-vnc :0 \\" )
   str+=( "-cpu host -usb -device usb-tablet \\" )
 
-  vgpu_opt=($(grep "^VGPU" $idv_config_file))
-  if [[ -z $vgpu_opt ]]; then
-    str+=( "-device vfio-pci,sysfsdev=$gfx_device/$VGPU1,display=off,x-igd-opregion=on" )
+  usb_opt=($(grep "^QEMU_USB_$vgpu" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting
+  [[ ! -z $usb_opt ]] && str+=( "$usb_opt \\" )
+
+  vgpu_guid=($(grep "^$vgpu" $idv_config_file))
+
+  if [[ -z $vgpu_guid ]]; then
+    unset str          # if there is no GUID set for startup file, then clear the $str
+    str+=("GUID is not set. Re-run the config.sh")
   else
-    str+=( "-device vfio-pci,sysfsdev=$gfx_device/$VGPU1,display=off,x-igd-opregion=on \\" )
-    opt=($(grep "QEMU_USB" $idv_config_file))
-    temp="${opt#*=\"}"
-    str+=( ${temp%\"} )
+    str+=( "-device vfio-pci,sysfsdev=$gfx_device/${vgpu_guid#*=},display=off,x-igd-opregion=on" )
   fi
 
   printf "%s\n"  "Creating $START_GUEST-$low_vgpu.sh file.. "
