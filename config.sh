@@ -73,4 +73,5 @@ function config_main() {
     esac
   done
 }
+build_vm_directory
 config_main

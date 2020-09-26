@@ -144,7 +144,7 @@ function create_files() {
   local vgpuinfo=$1
   echo "create_file: temp: $vgpuinfo, $cdir"
 
-  build_fw_directory
+#  build_fw_directory
 #  build_create_vgpu "$vgpuinfo"
   build_install_qemu_batch "$vgpuinfo"
   build_start_qemu_batch "$vgpuinfo"
