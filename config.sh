@@ -14,8 +14,6 @@ kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off "lt
 
 function run_all() {
   portinfo="${1%=*}"
-#  portinfo="$(echo $portinfo | tr '[:upper:]' '[:lower:]')"
-  echo "run_all: $portinfo"
 
   # install enough package to start config
   run_as_root "apt install uuid"
@@ -62,16 +60,17 @@ function config_main() {
     [[ $? -eq 1 ]] && break
 
     case $opt in
-      Kernel)  source ./scripts/config-kernel.sh ;;
+      Kernel)  source $cdir/scripts/config-kernel.sh ;;
       Mdev) source $cdir/scripts/config-mdev-type.sh;;
-      PORT_A|PORT_B|PORT_C|PORT_D)  echo "source ./scripts/config-qemu-setup.sh"
+      PORT_A|PORT_B|PORT_C|PORT_D)
         for (( i=0; i<${#gfx_port[@]}; i++ )); do
           [[ "$opt" == "${gfx_port[$i]##*=}" ]] && run_all "${vgpu_port[$i]}"
-        done
-            ;;
+        done ;;
       Exit)  break ;;
     esac
   done
 }
-build_vm_directory
+
+# install qemu-system-x86 and copy firmware to /var/vm/fw
+#build_vm_directory
 config_main
