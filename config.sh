@@ -29,6 +29,9 @@ function run_all() {
   #================================================
   #source scripts/config-select-vgpu.sh
 #  source $cdir/scripts/config-mdev-type.sh
+	source $cdir/scripts/config-iso-option.sh
+	get_iso_file "$portinfo"
+
   source $cdir/scripts/config-qemu-setup.sh
   get_qemu_firmware_option "$portinfo"
   get_qemu_usb_option "$portinfo"

@@ -17,11 +17,13 @@ function setup_main() {
 #  vgpuinfo=( $( grep "FW_VGPU" $idv_config_file ) )
   vgpuinfo=( $( grep "FW_VGPU" $idv_config_file | grep -oP '(?<=_).*(?==)' ) )
 
+	build_create_vgpu
+
 	for vgpu in ${vgpuinfo[@]}; do
 		echo "i in loop: $vgpu"
 
 #  create_vm_dir
-	  get_user_option 
+#	  get_user_option 
 	  create_files "$vgpu"
   done
 }

@@ -15,13 +15,14 @@ NC=`tput sgr0`
 #=================================
 # global variable shared among scripts
 #=================================
-vmroot=/var
+#vmroot=/var
+vmroot=.
 vmdir="$vmroot/vm"
 cdir=$(pwd)
 
 default_config=./scripts/idv-config-default
 idv_config_file="$cdir/.idv-config"
-[[ -f "$idv_config_file" ]] && default_config="$idv_config_file" || touch $idv_config_file
+[[ -f "$idv_config_file" ]] && default_config=$idv_config_file || touch $idv_config_file
 
 function update_idv_config() {
   opt=("$@")
