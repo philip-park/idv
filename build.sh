@@ -11,7 +11,7 @@ source scripts/util.sh
 # patches : idv patch file name with our ".tar.gz" extention
 ###################################################################
 version="0.7"
-cdir=$(pwd)
+#cdir=$(pwd)
 echo "${green}Current working directory : $cdir${NC}"
 kdir="kernel"
 krevision="3.0"
@@ -40,6 +40,7 @@ fi
 
 #================================================
 # Check validity of the repo and branch
+# Can't build if repo and branch is empty
 #================================================
 repo=($(grep "repo=" $idv_config_file))
 branch=($(grep "branch=" $idv_config_file))
@@ -53,8 +54,6 @@ if [[ -z "${repo##*repo=}" || -z "${branch##*=}" ]]; then
   exit 0
 fi
 
-
-#[[ -z "${repo##*repo=}" && -z "${branch##*=}" ]] && source ./scripts/config-kernel.sh
 
 #================================================
 # Clean up the IDV
