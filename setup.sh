@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source scripts/util.sh
-cdir=$(pwd)
+#cdir=$(pwd)
 
 [[ "$1" == "clean" ]] && clean && exit 0
 
@@ -12,18 +12,18 @@ cdir=$(pwd)
 #build_vm_directory
 source scripts/setup-vm.sh
 
-
+#==========================================================
+# Create VM related run time files from user selected FW_VGPU
+# Without FW, the guest OS will not boot. So use FW selection
+# until find better way.
+#==========================================================
 function setup_main() {
-#  vgpuinfo=( $( grep "FW_VGPU" $idv_config_file ) )
+  # grep strings between '_' and '='
   vgpuinfo=( $( grep "FW_VGPU" $idv_config_file | grep -oP '(?<=_).*(?==)' ) )
 
 	build_create_vgpu
 
 	for vgpu in ${vgpuinfo[@]}; do
-		echo "i in loop: $vgpu"
-
-#  create_vm_dir
-#	  get_user_option 
 	  create_files "$vgpu"
   done
 }

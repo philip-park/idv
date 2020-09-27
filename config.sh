@@ -35,13 +35,17 @@ function run_all() {
   get_qemu_usb_option "$portinfo"
 }
 
-
+#=========================================================
+# gfx_port is ports detected by IDV gvt_port_disp_status
+# vgpu_port is guid. (TBD: need to change it to vgpu_guid)
+#=========================================================
 function config_main() {
   unset mainlist
 
   run_as_root "apt install dialog"  # make sure dialog is installed
   source $cdir/scripts/config-select-vgpu.sh  # get vgpu, gfx port, and port mask info
 
+  # gfx_port is ports detected by IDV gvt_port_disp_status
   gfx_port=($(grep "^GFX_PORT=" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting
   vgpu_port=( $(grep "^VGPU" $idv_config_file) )
 
