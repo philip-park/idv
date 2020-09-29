@@ -5,15 +5,20 @@ source ./.idv-config
 
 vm_dir="$cdir/vm"
 
-function create_vm_dir() {
-(mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts})
-}
+#function create_vm_dir() {
+#(mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts})
+#}
 
-function build_fw_directory() {
+function build_fw_directory_deleteme() {
   [[ -f /usr/share/qemu/bios.bin ]] && run_as_root "cp /usr/share/qemu/bios.bin $vm_dir/fw" \
       || echo "Error: can't find /usr/share/qemu/bios.bin file"
   [[ -f /usr/share/qemu/OVMF.fd ]] && run_as_root "cp /usr/share/qemu/OVMF.fd $vm_dir/fw" \
       || echo "Error: can't find /usr/share/qemu/OVMF.fd file"
+}
+
+function create_vm_dir_deltedme() {
+  (mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts})
+  build_fw_directory
 }
 
 CREATE_VGPU="$vm_dir/create-vgpu.sh"

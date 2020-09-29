@@ -125,7 +125,7 @@ function compile_kernel() {
 ( cd $kdir && CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers )
 }
 install_packages
-exit 0
+#exit 0
 add_modules
 cp -a /usr/share/kernel-package $cdir/ubuntu-package
 pull_kernel

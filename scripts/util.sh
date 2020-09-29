@@ -45,8 +45,9 @@ RUNASSUDO_PACKAGE
 
 function install_packages() {
   echo "${green}Installing packages needed.. may take some time.${NC}"
-  run_as_root "apt-get autoremove -y &>/dev/null"
-  run_as_root "apt-get install -y rsync qemu-system-x86 liblz4-tool kernel-package libelf-dev build-essential git libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server net-tools kernel-package uuid" &>/dev/null
+  run_as_root "apt-get autoremove -y " #&>/dev/null"
+  run_as_root "apt-get install -y rsync qemu-system-x86 liblz4-tool kernel-package libelf-dev build-essential git libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server net-tools kernel-package uuid"
+# &>/dev/null"
 }
 
 function build_fw_directory() {
