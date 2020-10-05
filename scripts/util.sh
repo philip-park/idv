@@ -16,8 +16,8 @@ NC=`tput sgr0`
 # global variable shared among scripts
 #=================================
 cdir=$(pwd)
-#vmroot=/var
-vmroot=$cdir
+vmroot=/var
+#vmroot=$cdir
 vmdir="$vmroot/vm"
 
 default_config=./scripts/idv-config-default
