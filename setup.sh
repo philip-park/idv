@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source scripts/util.sh
+source ./scripts/util.sh
 #cdir=$(pwd)
 
 [[ "$1" == "clean" ]] && clean && exit 0

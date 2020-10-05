@@ -55,16 +55,31 @@ function config_main() {
   gfx_port=($(grep "^GFX_PORT=" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting
   vgpu_port=( $(grep "^VGPU" $idv_config_file) )
 
-  mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" )
-  mainlist+=( "Mdev" "mdev type option config" )
-  for (( i=0; i<${#gfx_port[@]}; i++ )); do
-    mainlist+=( "${gfx_port[$i]##*=}" "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}" )
+  # add kernel option to the menu
+  mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" "This option is only for kernel build." )
+
+  # add GVTg port option
+  if [[ ${#gfx_port[@]} -ne 0 ]]; then
+    # add MDEV type option
+    mainlist+=( "Mdev" "mdev type option config" "Option to select mdev type. Needed for VM config." )
+
+    for (( i=0; i<${#gfx_port[@]}; i++ )); do
+      mainlist+=( "${gfx_port[$i]##*=}" "GFX ${gfx_port[$i]##*=} as ${vgpu_port[$i]}"  "Config ${gfx_port[$i]} with guest OS, firmware, and USB devices to pass through" )
 			echo "$i) gfx: ${gfx_port[$i]}, vgpu: ${vgpu_port[$i]}"
-  done
-  mainlist+=( "Exit" "Exit config menu" )
+    done
+
+    # add setup
+    mainlist+=( "Setup" "Minimum setup VM without systemd" "Sets up initial qemu scripts" )
+
+    # add systemd auto start option
+    mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
+  fi
+
+  # add exit option
+  mainlist+=( "Exit" "Exit config menu" "Exit the configuration" )
 
   while true ; do
-    opt=$(dialog --keep-tite --menu "Select configuration options" 20 80 10 \
+    opt=$(dialog --item-help --keep-tite --menu "Select configuration options" 20 80 10 \
             "${mainlist[@]}" 3>&1 1>&2 2>&3 )
 
     [[ $? -eq 1 ]] && break # Cancel selected
@@ -76,6 +91,11 @@ function config_main() {
         for (( i=0; i<${#gfx_port[@]}; i++ )); do
           [[ "$opt" == "${gfx_port[$i]##*=}" ]] && run_all "${vgpu_port[$i]%=*}"
         done ;;
+      Setup)
+        source ./setup.sh;;
+
+      Systemd)
+        source $cdir/systemd/config-systemd.sh;;
       Exit)  break ;;
     esac
   done
