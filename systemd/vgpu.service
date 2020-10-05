@@ -1,0 +1,14 @@
+[Unit]
+Description=Create GVTg VGPU
+# This unit creates 3 virtual GPUs with the UUIDs below.
+# It also set the port map mask to 0 which disables direct display pipe to port map.
+ConditionPathExists=/sys/bus/pci/devices/0000:00:02.0/mdev_supported_types
+ConditionPathExists=/var/vm/create-vgpu.sh
+[Service]
+Type=oneshot
+RemainAfterExit=true
+EnvironmentFile=/var/vm/create-vgpu.sh
+ExecStart=/var/vm/create-vgpu.sh
+ExecStop=/var/vm/destroy-vgpu.sh
+[Install]
+WantedBy=multi-user.target
