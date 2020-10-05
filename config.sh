@@ -69,7 +69,7 @@ function config_main() {
     done
 
     # add setup
-    mainlist+=( "Setup" "Minimum setup VM without systemd" "Sets up initial qemu scripts" )
+    mainlist+=( "Setup" "Minimum setup VM without systemd" "Sets up initial qemu scripts and populate vm directory" )
 
     # add systemd auto start option
     mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
