@@ -61,11 +61,8 @@ function clean() {
   set_global_variables
   remove_packages
 
-  sudo cp grub /etc/default/
-  sudo cp modules /etc/initramfs-tools/
 
-  sudo cp modules /etc/initramfs
-
+  sudo find /var -type d -name "vm" -exec sudo rm -rf {} +
   find . -type d -name "$kdir" -exec rm -rf {} +
   find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
   find . -type d -name "ubuntu-package" -exec rm -rf {} +
