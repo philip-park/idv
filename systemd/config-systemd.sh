@@ -1,5 +1,5 @@
 #!/bin/bash
 
 source ./scripts/util.sh
-systemctl enable $cdir/systemd/vgpu.service
+run_as_root "systemctl enable $cdir/systemd/vgpu.service"
 
