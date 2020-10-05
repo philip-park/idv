@@ -1,29 +1,30 @@
 #!/bin/bash
 
-source scripts/util.sh
+source ./scripts/util.sh
 source ./.idv-config
 
-vm_dir="$cdir/vm"
+#vm_dir="$cdir/vm"
 
 #function create_vm_dir() {
-#(mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts})
+#(mkdir -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts})
 #}
 
 function build_fw_directory_deleteme() {
-  [[ -f /usr/share/qemu/bios.bin ]] && run_as_root "cp /usr/share/qemu/bios.bin $vm_dir/fw" \
+  [[ -f /usr/share/qemu/bios.bin ]] && run_as_root "cp /usr/share/qemu/bios.bin $vmdir/fw" \
       || echo "Error: can't find /usr/share/qemu/bios.bin file"
-  [[ -f /usr/share/qemu/OVMF.fd ]] && run_as_root "cp /usr/share/qemu/OVMF.fd $vm_dir/fw" \
+  [[ -f /usr/share/qemu/OVMF.fd ]] && run_as_root "cp /usr/share/qemu/OVMF.fd $vmdir/fw" \
       || echo "Error: can't find /usr/share/qemu/OVMF.fd file"
 }
 
 function create_vm_dir_deltedme() {
-  (mkdir -p {$vm_dir,$vm_dir/fw,$vm_dir/disk,$vm_dir/iso,$vm_dir/scripts})
+  (mkdir -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts})
   build_fw_directory
 }
 
-CREATE_VGPU="$vm_dir/create-vgpu.sh"
-INSTALL_GUEST="$vm_dir/install-guest"
-START_GUEST="$vm_dir/start-guest"
+CREATE_VGPU="$vmdir/create-vgpu.sh"
+INSTALL_GUEST="$vmdir/install-guest"
+START_GUEST="$vmdir/start-guest"
+TEMP_FILE="$cdir/temp_file"
 
 gvt_disp_ports_mask="/sys/class/drm/card0/gvt_disp_ports_mask"
 mdev_dir="/sys/bus/pci/devices/0000:00:02.0/mdev_supported_types"
@@ -48,10 +49,10 @@ function build_create_vgpu() {
   done
 
   printf "%s\n"  "Creating $CREATE_VGPU file.. " 
-  printf "%s\n"  "${temp[@]}" > ./temp_file
-  run_as_root "cp ./temp_file $CREATE_VGPU"
+  printf "%s\n"  "${temp[@]}" > $TEMP_FILE
+  run_as_root "cp $TEMP_FILE $CREATE_VGPU"
   run_as_root "chmod +x $CREATE_VGPU"
-  $(rm temp_file)
+  $(rm $TEMP_FILE)
 }
 
 function build_install_qemu_batch() {
@@ -85,10 +86,10 @@ echo "install qemu: $vgpu"
   str+=( "-vnc :0" )
 
   printf "%s\n"  "Creating $INSTALL_GUEST-$low_vgpu.sh file.. "
-  printf "%s\n"  "${str[@]}" > ./temp_file
-  run_as_root "cp ./temp_file $INSTALL_GUEST-$low_vgpu.sh"
+  printf "%s\n"  "${str[@]}" > $TEMP_FILE
+  run_as_root "cp $TEMP_FILE $INSTALL_GUEST-$low_vgpu.sh"
   run_as_root "chmod +x $INSTALL_GUEST-$low_vgpu.sh"
-  $(rm temp_file)
+  $(rm $TEMP_FILE)
 }
 
 gfx_device="/sys/bus/pci/devices/0000:00:02.0"
@@ -137,11 +138,11 @@ IFS=$'\n'
   fi
 
   printf "%s\n"  "Creating $START_GUEST-$low_vgpu.sh file.. "
-  printf "%s\n"  "${str[@]}" > ./temp_file
-  run_as_root "cp ./temp_file $START_GUEST-$low_vgpu.sh"
+  printf "%s\n"  "${str[@]}" > $TEMP_FILE
+  run_as_root "cp $TEMP_FILE $START_GUEST-$low_vgpu.sh"
   run_as_root "chmod +x $START_GUEST-$low_vgpu.sh"
 IFS=${O_IFS}
-  $(rm temp_file)
+  $(rm $TEMP_FILE)
 }
 
 
