@@ -96,7 +96,7 @@ function config_main() {
 
       Systemd)
         source $cdir/systemd/config-systemd.sh;;
-      Exit)  break ;;
+      Exit)  exit 0 ;;
     esac
   done
 }
