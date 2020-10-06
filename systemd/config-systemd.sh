@@ -82,14 +82,15 @@ function qemu_start() {
   unset str
   qemu_start_files=( $vmdir/scripts/start-guest-* )
 
-  run_as_root "cp ./systemd/qemu@.service /lib/systemd/system"
+  run_as_root "cp $cdir/systemd/start-qemu.sh $vmdir/scripts/"
+  run_as_root "cp $cdir/systemd/qemu@.service /lib/systemd/system"
 
   for i in ${qemu_start_files[@]}; do
     temp="${i##*-}"
     vgpu="${temp%.*}"
     run_as_root "systemctl enable qemu@$vgpu.service"
   done
-  $(rm $TEMP_FILE)
+#  $(rm $TEMP_FILE)
 
 }
 

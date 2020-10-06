@@ -4,8 +4,8 @@ source ./scripts/util.sh
 source ./.idv-config
 
 CREATE_VGPU="$vmdir/scripts/create-vgpu.sh"
-INSTALL_GUEST="$vmdir/install-guest"
-START_GUEST="$vmdir/start-guest"
+INSTALL_GUEST="$vmdir/scripts/install-guest"
+START_GUEST="$vmdir/scripts/start-guest"
 TEMP_FILE="$cdir/temp_file"
 
 gvt_disp_ports_mask="/sys/class/drm/card0/gvt_disp_ports_mask"
