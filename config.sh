@@ -43,12 +43,12 @@ function config_main() {
   unset mainlist
 
   # install enough package to start config
-  run_as_root "apt install uuid"
+  run_as_root "apt -y install uuid"
 
   # install qemu-system-x86 and copy firmware to /var/vm/fw
   build_vm_directory
 
-  run_as_root "apt install dialog"  # make sure dialog is installed
+  run_as_root "apt -y install dialog"  # make sure dialog is installed
   source $cdir/scripts/config-select-vgpu.sh  # get vgpu, gfx port, and port mask info
 
   # gfx_port is ports detected by IDV gvt_port_disp_status
