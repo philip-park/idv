@@ -74,7 +74,7 @@ done
 
 function install_docker() {
   $(docker -v)
-  if [[ $? -ne 0 ]]; then
+  if ! docker -v; then
     run_as_root "apt-get update"
     run_as_root "apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common"
     run_as_root "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
@@ -86,7 +86,7 @@ function install_docker() {
 }
 
 function build_docker() {
-  if [[ "$(docker images -q mydocker/bob_the_builder 2> /dev/null)" == "" ]]; then
+  if [[ -z $(run_as_root "docker images -q mydocker/bob_the_builder 2> /dev/null") ]]; then
     cd ./docker; run_as_root "docker build . -t mydocker/bob_the_builder"
   fi
 }
