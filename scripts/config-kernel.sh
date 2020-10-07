@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#kernel_repo+=("CCG-repo" "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git" off \
-#              "v5.4.54")
-#kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off \
-#              "lts-v5.4.57-yocto-200819T072823Z")
-
 default_config=./scripts/idv-config-default
 idv_config_file=./.idv-config
 [[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
@@ -28,7 +23,7 @@ function set_default_url() {
 }
 
 #================================================================
-# CCG build needs patches, find patches from current directory
+# Vanilla build needs patches, find patches from current directory
 # case 1) $patch_file=0 and $patches=0 ====> use No Patches
 # case 2) $patch file=1 and $patches=0 ====> use $patch_file
 # case 3) $patch_file=1 and $patches=1 ====> use matching pair, no match, then No Patches
@@ -74,11 +69,11 @@ function kernel_options() {
   set_default_url
 #  unset option
   option=$( dialog --item-help --backtitle "Kernel URL selection" \
-    --radiolist "Kernel can be pulled from two different sources, IOTG and CCG repo\n\
+    --radiolist "Kernel can be pulled from two different sources, IOTG and Vanilla repo\n\
 *IOTG repo: IOTG kernel development team maintains kernel with IDV patches\n\
   where separate patches is not needed. Warning: the patches update to IDV\n\
   maintained kernel might be delayed due to extensive testing\n\
-*CCG repo: CCG repo doesn't include the IDV patches needed for GVTg\n\
+*Vanilla repo: Vanilla repo doesn't include the IDV patches needed for GVTg\n\
   Without the patches, GVTg will not work. \n\
   Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
 "${kernel_repo[@]}" \
@@ -108,7 +103,7 @@ function kernel_options() {
 kernel_source="$(kernel_options)"
 
 # IOTG build shouldn't need patch
-if [[ $kernel_source == "CCG-repo" ]]; then
+if [[ $kernel_source == "Vanilla" ]]; then
   get_patch_file
 else
   (grep -qF "patches=" $idv_config_file) \
