@@ -73,7 +73,6 @@ done
 }
 
 function install_docker() {
-  $(docker -v)
   if ! docker -v; then
     run_as_root "apt-get update"
     run_as_root "apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common"
