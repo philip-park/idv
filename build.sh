@@ -64,7 +64,8 @@ fi
 # Pull Kernel and Compile
 #================================================
 source $idv_config_file
-source ./scripts/build-helper
+#source ./scripts/build-helper
+source ./scripts/build-kernel-docker.sh
 
 #================================================
 # Setup Kernel command line option in /etc/default/grub

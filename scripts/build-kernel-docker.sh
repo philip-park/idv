@@ -73,15 +73,23 @@ done
 }
 
 function install_docker() {
-  run_as_root "apt-get update"
-  run_as_root "apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common"
-  run_as_root "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
-  run_as_root "apt-key fingerprint 0EBFCD88"
-  run_as_root "add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\""
-  run_as_root "apt-get update"
-  run_as_root "apt-get install -y docker-ce docker-ce-cli containerd.io"
+  $(docker -v)
+  if [[ $? -ne 0 ]]; then
+    run_as_root "apt-get update"
+    run_as_root "apt-get install -y apt-transport-https ca-certificates curl gnupg-agent software-properties-common"
+    run_as_root "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+    run_as_root "apt-key fingerprint 0EBFCD88"
+    run_as_root "add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable\""
+    run_as_root "apt-get update"
+    run_as_root "apt-get install -y docker-ce docker-ce-cli containerd.io"
+  fi
 }
 
+function build_docker() {
+  if [[ "$(docker images -q mydocker/bob_the_builder 2> /dev/null)" == "" ]]; then
+    cd ./docker; run_as_root "docker build . -t mydocker/bob_the_builder"
+  fi
+}
 
 #================================================
 #cp -a /usr/share/kernel-package $cdir/ubuntu-package
@@ -136,6 +144,7 @@ function compile_kernel() {
 ( cd $kdir && CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers )
 }
 install_docker
+build_docker
 exit 0
 install_packages
 #exit 0
