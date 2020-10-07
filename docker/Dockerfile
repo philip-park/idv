@@ -20,6 +20,6 @@ RUN apt-get update \
  	libusbredirparser-dev libssh-dev libxen-dev nettle-dev \
 	uuid-dev xfslibs-dev libjpeg-dev libpmem-dev \
 	gcc-s390x-linux-gnu gcc-alpha-linux-gnu \
-	libc6.1-dev-alpha-cross gcc-powerpc64-linux-gnu rsync \
+	libc6.1-dev-alpha-cross gcc-powerpc64-linux-gnu rsync libelf-dev\
  && apt-get clean
 
