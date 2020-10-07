@@ -45,15 +45,9 @@ EOF
 
 function install_packages() {
   echo "${green}Installing packages needed.. may take some time.${NC}"
-#  if [[ $EUID -eq 0 ]];then
-#    apt-get -y autoremove #&>/dev/null"
-#    apt-get -y install rsync qemu-system-x86 liblz4-tool kernel-package libelf-dev build-essential git libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server net-tools uuid
-# &>/dev/null"
-#  else
     run_as_root "apt -y autoremove" #&>/dev/null"
     run_as_root "apt -y install kernel-package"
     run_as_root "sudo apt-get -y install rsync qemu-system-x86 liblz4-tool libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server uuid"
-#  fi
 }
 
 function build_fw_directory() {
