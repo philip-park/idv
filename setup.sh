@@ -9,7 +9,7 @@ source ./scripts/util.sh
 # VGPU mask setting based on mdev_type user input
 #================================================
 #build_vm_directory
-source scripts/setup-vm.sh
+source $cdir/scripts/setup-vm.sh
 
 #==========================================================
 # Create VM related run time files from user selected FW_VGPU
@@ -28,3 +28,6 @@ function setup_main() {
 }
 
 setup_main
+
+source $cdir/systemd/setup-vgpu-systemd.sh
+
