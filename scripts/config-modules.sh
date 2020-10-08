@@ -11,6 +11,7 @@ modules=(kvmgt vfio-iommu-type1 vfio-mdev vfio-pci)
     echo $i
     run_as_root "grep -qxF $i /etc/initramfs-tools/modules || echo $i >> /etc/initramfs-tools/modules"
   done
+  run_as_root "update-initramfs -u"
 }
 
 add_modules
