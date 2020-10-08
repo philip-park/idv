@@ -16,3 +16,10 @@ source $cdir/scripts/install-docker.sh
 run_as_root "docker run --rm -v /home/snuc/idv:/build --name bob mydocker/bob_the_builder  bash -c \"cd /build/docker; ./build-docker.sh\""
 
 source $cdir/scripts/config-grub.sh
+source $cdir/scripts/config-modules.sh
+read -r -p "Want to install the kernel? [y/N] " answer
+case "$answer" in
+  [yY]) run_as_root "dpkg -i *.deb";;
+  *) echo "you can install kernel using ${yellow}sudo dpkg -i *.deb${NC}";;
+esac
+
