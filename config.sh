@@ -8,8 +8,8 @@ source scripts/util.sh
 #===============================================
 # Fixed Kernel repo supported by IDV solution
 #===============================================
-kernel_repo+=("Vanilla" "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git" off "v5.4.54")
-kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off "lts-v5.4.57-yocto-200819T072823Z")
+#kernel_repo+=("Vanilla" "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git" off "v5.4.54")
+#kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off "lts-v5.4.57-yocto-200819T072823Z")
 
 
 function run_all() {
@@ -56,7 +56,7 @@ function config_main() {
   vgpu_port=( $(grep "^VGPU" $idv_config_file) )
 
   # add kernel option to the menu
-  mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" "This option is only for kernel build." )
+  #  mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" "This option is only for kernel build." )
 
   # add GVTg port option
   if [[ ${#gfx_port[@]} -ne 0 ]]; then
