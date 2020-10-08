@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export env TERM=xtern-256color
 source scripts/util.sh
 
 ###################################################################
@@ -16,22 +17,14 @@ kdir="kernel"
 krevision="3.0"
 kversion="intelgvt"
 
-function set_global_variables_deleteme() {
-while IFS=$'\n' read -r line; do
-  case $line in
-    repo=*) repo=${line##*=} ;;
-    branch=*) branch=${line##*=} ;;
-    patches=*) patches=${line##*=} ;;
-  esac
-done < "$default_config"
-}
-
+source $idv_config_file
+source ./scripts/build-kernel-docker.sh
+exit 0
 #================================================
 # Check whether .idv-config file exists
 # The .idv-config file is created by config.sh.
 #================================================
 echo "idv config file: $idv_config_file"
-#[[ -f "$idv_config_file" ]] && echo "exist" || echo "not exists"
 if [[ ! -f "$idv_config_file" ]];then
   printf "\n${yellow}Please run config.sh file...\n\n${NC}"
   exit 0
