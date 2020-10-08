@@ -17,9 +17,12 @@ run_as_root "docker run --rm -v /home/snuc/idv:/build --name bob mydocker/bob_th
 
 source $cdir/scripts/config-grub.sh
 source $cdir/scripts/config-modules.sh
-read -r -p "Want to install the kernel? [y/N] " answer
+read -r -p "Want to install the kernel and reboot? [y/N] " answer
 case "$answer" in
-  [yY]) run_as_root "dpkg -i *.deb";;
+  [yY]) run_as_root "dpkg -i *.deb"
+        echo "reboot in 5 seconds"
+        sleep 5
+        run_as_root "reboot" ;;
   *) echo "you can install kernel using ${yellow}sudo dpkg -i *.deb${NC}";;
 esac
 
