@@ -101,8 +101,6 @@ function kernel_options() {
   echo "$option"
 }
 
-#set_default_url
-
 kernel_source="$(kernel_options)"
 
 # IOTG build shouldn't need patch
