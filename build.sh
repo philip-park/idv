@@ -70,7 +70,7 @@ source ./scripts/build-kernel-docker.sh
 #================================================
 # Setup Kernel command line option in /etc/default/grub
 #================================================
-source scripts/grub-setup.sh
+source scripts/config-grub.sh
 
 run_as_root "apt-get install -y qemu-system-x86"
 
