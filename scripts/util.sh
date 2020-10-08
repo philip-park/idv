@@ -20,6 +20,13 @@ vmroot=/var
 #vmroot=$cdir
 vmdir="$vmroot/vm"
 
+#===============================================
+# Fixed Kernel repo supported by IDV solution
+#===============================================
+kernel_repo+=("Vanilla" "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git" off "v5.4.54")
+kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off "lts-v5.4.57-yocto-200819T072823Z")
+
+
 default_config=./scripts/idv-config-default
 idv_config_file="$cdir/.idv-config"
 [[ -f "$idv_config_file" ]] && default_config=$idv_config_file || touch $idv_config_file

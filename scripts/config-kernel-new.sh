@@ -48,11 +48,16 @@ function get_patch_file() {
 Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
             "${list[@]}" \
             3>&1 1>&2 2>&3 )
-  [[ -z $option_patch || $option_patch -eq "0" ]] && patches="" || patches=${list[$((option_patch*3+1))]}
+#echo "results from patch file: $?"
+  if [[ $? -ne 1  ]]; then # okay pressed
+echo "patch procssing"
+    [[ -z $option_patch || $option_patch -eq "0" ]] && patches="" || patches=${list[$((option_patch*3+1))]}
 
-  (grep -qF "patches=" $idv_config_file) \
-    && sed -i "s/^patches=.*$/patches=$patches/" $idv_config_file \
-    ||    echo "patches=$patches" >> $idv_config_file
+    echo "results from patch file: $?"
+    (grep -qF "patches=" $idv_config_file) \
+      && sed -i "s/^patches=.*$/patches=$patches/" $idv_config_file \
+      ||    echo "patches=$patches" >> $idv_config_file
+  fi
 }
 
 #================================================================
@@ -73,6 +78,8 @@ function kernel_options() {
 "${kernel_repo[@]}" \
     3>&1 1>&2 2>&3 )
 
+  [[ $? -eq 1  ]] && return
+
   # Replace or add with updated repo and branch information
   for (( i=0; i<${#kernel_repo[@]}; i += 4 )); do
     if [[ $option == ${kernel_repo[$i]} ]]; then
@@ -81,6 +88,8 @@ function kernel_options() {
       else
         echo "repo=${kernel_repo[$((i+1))]}" >> $idv_config_file
       fi
+
+#      echo "kernle source: ${kernel_repo[$i]}"
       if grep -qF "branch=" $idv_config_file; then
         sed -i "s/^branch=.*$/branch=${kernel_repo[$((i+3))]//\//\\/}/" $idv_config_file
       else
@@ -97,19 +106,21 @@ function kernel_options() {
 kernel_source="$(kernel_options)"
 
 # IOTG build shouldn't need patch
-if [[ $kernel_source == "Vanilla" ]]; then
-  get_patch_file
-else
-  (grep -qF "patches=" $idv_config_file) \
-      && sed -i "s/^patches=.*$/patches=/" $idv_config_file \
-      || echo "patches=" >> $idv_config_file
-fi
+case $kernel_source in
+  Vanilla) get_patch_file;;
+  IOTG-repo)
+    echo "kernel source: $kernel_source"
+      (grep -qF "patches=" $idv_config_file) \
+        && sed -i "s/^patches=.*$/patches=/" $idv_config_file \
+        || echo "patches=" >> $idv_config_file;;
+esac
+
 
 #==============================================
 # Source the latest configuration
 #==============================================
 source $idv_config_file
 
-echo "results: patches: '$result', $patches"
+echo "results: patches: '$result', $patches, option: $kernel_source"
  
 
