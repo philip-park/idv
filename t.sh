@@ -3,7 +3,8 @@
 source ./scripts/util.sh
 
 echo "idv config file: $idv_config_file"
-[[ -f "$idv_config_file" ]] || source $cdir/scripts/config-kernel.sh
+#[[ -f "$idv_config_file" ]] || source $cdir/scripts/config-kernel-new.sh
+source $cdir/scripts/config-kernel-new.sh
 
 # Install docker to host if not installed
 source $cdir/scripts/install-docker.sh
