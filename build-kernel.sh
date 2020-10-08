@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source ./scripts/util.sh
+run_as_root "apt install dialog"
 
 echo "idv config file: $idv_config_file"
 source $idv_config_file
