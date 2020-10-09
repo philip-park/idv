@@ -54,7 +54,7 @@ function install_packages() {
   echo "${green}Installing packages needed.. may take some time.${NC}"
     run_as_root "apt -y autoremove" #&>/dev/null"
     run_as_root "apt -y install kernel-package"
-    run_as_root "sudo apt-get -y install rsync qemu-system-x86 liblz4-tool libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server uuid"
+    run_as_root "apt-get -y install rsync qemu-system-x86 liblz4-tool libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server uuid"
 }
 
 function build_fw_directory() {

@@ -63,8 +63,8 @@ function clean() {
   remove_packages
 
 
-  sudo find /var -type d -name "vm" -exec sudo rm -rf {} +
-  find . -type d -name "$kdir" -exec rm -rf {} +
+  run_as_root "find /var -type d -name \"vm\" -exec sudo rm -rf {} +"
+  run_as_root "find . -type d -name $kdir -exec rm -rf {} +"
   find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
   find . -type d -name "ubuntu-package" -exec rm -rf {} +
   #[[ -d $cdir/$kdir && ! -z "$kdir" ]] && find $kdir -type d -name "$kdir" -exec rm -rf {} +

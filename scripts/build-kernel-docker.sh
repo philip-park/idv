@@ -78,10 +78,11 @@ fi
 # 5) config file for kernel
 #================================================
 # Fetch kernel config to .config and apply it using make oldconfig
+kernel_config_url="https://kernel.ubuntu.com/~kernel-ppa/config/focal/linux/5.4.0-44.48/amd64-config.flavour.generic"
 function kernel_config() {
-  if [ ! -z "$configurl" ]; then
-    echo "fetching kernel config from $configurl"
-    /usr/bin/wget -q -O $kdir/.config $configurl
+  if [ ! -z "$kernel_config_url" ]; then
+    echo "fetching kernel config from $kernel_config_url"
+    /usr/bin/wget -q -O $kdir/.config $kernel_config_url
   fi
 
   echo "${green}--- Appling kernel config ...${NC}"
