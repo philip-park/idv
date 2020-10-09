@@ -12,6 +12,9 @@ source $idv_config_file
 # Install docker to host if not installed
 source $cdir/scripts/install-docker.sh
 
+# delete linux*.deb file before building new
+( rm -rf linux*.deb )
+
 # run docker as user to build kernel
 run_as_root "docker run --rm -v /home/snuc/idv:/build \
         -u $(id -u ${USER}):$(id -g ${USER}) \
@@ -21,7 +24,7 @@ run_as_root "docker run --rm -v /home/snuc/idv:/build \
 source $cdir/scripts/config-grub.sh
 source $cdir/scripts/config-modules.sh
 
-debs=( ls $cdir/*.deb )
+debs=$( ls $cdir/*.deb )
 
 [[ -z "$debs" ]] && echo -e "${red}✖${NC} Oops.. kernel build error" && exit 1
 
