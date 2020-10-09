@@ -4,6 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
  && apt-get -y upgrade \
  && apt-get -y install tzdata \
+ && apt-get -y install apt-utils \
  && apt-get -y install build-essential \
 	git devscripts libfdt-dev libpixman-1-dev libssl-dev \
 	bison flex kernel-package vim socat libsdl1.2-dev libsdl2-dev \ 
