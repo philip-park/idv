@@ -21,8 +21,12 @@ run_as_root "docker run --rm -v /home/snuc/idv:/build \
 source $cdir/scripts/config-grub.sh
 source $cdir/scripts/config-modules.sh
 
-ls *.deb
+debs=( ls $cdir/*.deb )
 
+[[ -z "$debs" ]] && echo -e "${red}✖${NC} Oops.. kernel build error" && exit 1
+
+echo "${yellow}$debs${NC}"
+ 
 read -r -p "\n ${green}✔${NC} Want to install the kernel and reboot? [y/N] " answer
 case "$answer" in
   [yY]) run_as_root "dpkg -i *.deb"
