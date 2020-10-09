@@ -9,7 +9,7 @@ RUN apt-get update \
 	bison flex kernel-package vim socat libsdl1.2-dev libsdl2-dev \ 
 	libspice-server-dev autoconf libtool \
 	python-dev liblzma-dev libc6-dev libegl1-mesa-dev \
-	libepoxy-dev libdrm-dev libgbm-dev wget \
+	libepoxy-dev libdrm-dev libgbm-dev wget lz4 \
 	libegl1-mesa-dev libgtk2.0-dev libusb-1.0.0-dev \
 	device-tree-compiler texinfo python3-sphinx libaio-dev \ 
 	libattr1-dev libbrlapi-dev libcap-dev libcap-ng-dev \ 
