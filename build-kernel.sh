@@ -16,7 +16,7 @@ source $cdir/scripts/install-docker.sh
 ( rm -rf linux*.deb )
 
 # run docker as user to build kernel
-run_as_root "docker run --rm -v /home/snuc/idv:/build \
+run_as_root "docker run --rm -v $cdir:/build \
         -u $(id -u ${USER}):$(id -g ${USER}) \
        --name bob mydocker/bob_the_builder  bash -c \"cd /build/docker; ./build-docker.sh\""
 
