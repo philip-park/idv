@@ -68,9 +68,9 @@ function build_fw_directory() {
 
 function build_vm_directory() {
   if [[ $EUID -eq 0 ]];then
-    mkdir -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}
+    mkdir -m a=rwx -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}
   else
-    run_as_root "mkdir -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}"
+    run_as_root "mkdir -m a=rwx -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}"
   fi
   build_fw_directory
 }
