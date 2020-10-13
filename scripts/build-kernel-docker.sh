@@ -48,6 +48,10 @@ read -p "Press <Enter> key to continue"
 # 4) Pull the kernel source
 #================================================
 function pull_kernel() {
+  # delete existing kernel directory if exist
+  [[ ! -z "$kdir" ]] && find . -type d -name "$kdir" -exec rm -rf {} +
+
+  # check fresh copy of the kernel from a repo
   [[ ! -d "$cdir/$kdir" ]] && git clone --depth 1 $repo --branch $branch --single-branch $kdir
 }
 
