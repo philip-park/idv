@@ -1,6 +1,25 @@
 #!/bin/bash
 
 source ./scripts/util.sh
+
+function install_kernel() {
+  debs=$( ls $cdir/*.deb )
+  echo "${yellow}$debs${NC}"
+
+  [[ -z "$debs" ]] && echo -e "${red}✖${NC} Can't find *.deb file" && exit 1
+
+  source $cdir/scripts/config-grub.sh
+  run_as_root "dpkg -i *.deb"
+  source $cdir/scripts/config-modules.sh
+
+  echo "reboot in 5 seconds. Control + C to abort.."
+  sleep 5
+  run_as_root "reboot" 
+}
+
+# check for install option.
+[[ $1 == "install" ]] && echo "installing kernel" && exit 0
+
 run_as_root "apt install dialog"
 
 echo "idv config file: $idv_config_file"
@@ -20,22 +39,14 @@ run_as_root "docker run --rm -v $cdir:/build \
         -u $(id -u ${USER}):$(id -g ${USER}) \
        --name bob mydocker/bob_the_builder  bash -c \"cd /build/docker; ./build-docker.sh\""
 
-# update grub and modules file
-source $cdir/scripts/config-grub.sh
-source $cdir/scripts/config-modules.sh
-
 debs=$( ls $cdir/*.deb )
+echo "${yellow}$debs${NC}"
 
 [[ -z "$debs" ]] && echo -e "${red}✖${NC} Oops.. kernel build error" && exit 1
 
-echo "${yellow}$debs${NC}"
- 
 read -r -p "\n ${green}✔${NC} Want to install the kernel and reboot? [y/N] " answer
 case "$answer" in
-  [yY]) run_as_root "dpkg -i *.deb"
-        echo "reboot in 5 seconds"
-        sleep 5
-        run_as_root "reboot" ;;
-  *) echo "you can install kernel using ${yellow}sudo dpkg -i *.deb${NC}";;
+  [yY]) intall_kernel;;
+  *) echo "you can install kernel using ${yellow}$0 install${NC}";;
 esac
 
