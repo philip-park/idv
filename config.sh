@@ -73,6 +73,8 @@ function config_main() {
 
     # add systemd auto start option
     mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
+  else
+    dialog --msgbox "IDV GVTg Can't find monitor connected to the system. Please connect a monitors.\n\n" 10 40 && exit 1
   fi
 
   # add exit option
