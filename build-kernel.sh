@@ -18,7 +18,7 @@ function install_kernel() {
 }
 
 # check for install option.
-[[ $1 == "install" ]] && echo "installing kernel" && exit 0
+[[ $1 == "install" ]] && install_kernel && exit 0
 
 run_as_root "apt install dialog"
 
@@ -46,7 +46,7 @@ echo "${yellow}$debs${NC}"
 
 read -r -p "\n ${green}✔${NC} Want to install the kernel and reboot? [y/N] " answer
 case "$answer" in
-  [yY]) intall_kernel;;
+  [yY]) install_kernel;;
   *) echo "you can install kernel using ${yellow}$0 install${NC}";;
 esac
 
