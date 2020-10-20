@@ -74,6 +74,7 @@ function update_grub_kernel() {
   sed -i "/^GRUB_DEFAULT=.*/c $grub_default" $tempfile
   run_as_root "cp -f $tempfile $grubfile"
   run_as_root "update-grub2"
+  rm -f $tempfile
 }
 
 update_grub_kernel
