@@ -13,7 +13,7 @@ function install_docker() {
 }
 
 function build_docker() {
-  if [[ -z $(run_as_root "docker images -q mydocker/bob_the_builder 2> /dev/null") ]]; then
+  if [[ -z $(docker images -q mydocker/bob_the_builder 2> /dev/null) ]]; then
     cd ./docker; run_as_root "docker build . -t mydocker/bob_the_builder"
   fi
 }
