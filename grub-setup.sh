@@ -80,4 +80,4 @@ function update_grub_kernel() {
 grub_setup
 update_grub_kernel
  
-#[[ "$grub_modified" -eq 1 ]] && run_as_root "update-grub2"
+[[ "$grub_modified" -eq 1 ]] && run_as_root "update-grub2"
