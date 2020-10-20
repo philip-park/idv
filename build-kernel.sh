@@ -30,7 +30,7 @@ source $idv_config_file
 #source $cdir/scripts/config-modules.sh
 
 # if repo is not set, then run config-kernel to get option for kernel repo
-[[ -z $repo || -z $branch ]] && source $cdir/scripts/config-kernel-new.sh
+[[ -z $repo || -z $branch ]] && source $cdir/scripts/config-kernel.sh
 
 # Install docker to host if not installed
 source $cdir/scripts/install-docker.sh
