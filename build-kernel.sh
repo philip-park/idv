@@ -8,9 +8,7 @@ function install_kernel() {
 
   [[ -z "$debs" ]] && echo -e "${red}✖${NC} Can't find *.deb file" && exit 1
 
-  source $cdir/scripts/config-grub.sh
   run_as_root "dpkg -i *.deb"
-  source $cdir/scripts/config-modules.sh
 
   echo "reboot in 5 seconds. Control + C to abort.."
   sleep 5
@@ -25,6 +23,9 @@ run_as_root "apt install acl"
 
 echo "idv config file: $idv_config_file"
 source $idv_config_file
+
+source $cdir/scripts/config-grub.sh
+source $cdir/scripts/config-modules.sh
 
 # if repo is not set, then run config-kernel to get option for kernel repo
 [[ -z $repo || -z $branch ]] && source $cdir/scripts/config-kernel-new.sh
