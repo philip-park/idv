@@ -77,16 +77,3 @@ function build_vm_directory() {
 }
 
 
-#================================================
-# Clean the mess it made
-#================================================
-function clean() {
-  [[ -f $idv_config_file ]] && source $idv_config_file || exit 0
-echo "clean idv"
-  run_as_root "find /var -type d -name "vm" -exec rm -rf {} +"
-  [[ ! -z "$kdir" ]] && find . -type d -name "$kdir" -exec rm -rf {} +
-  [[ ! -z "$patches" ]] && find . -type d -name "${patches%.tar.gz}" -exec rm -rf {} +
-  find . -type d -name "ubuntu-package" -exec rm -rf {} +
-  find . -type f -name "*.deb" -exec rm -rf {} +
-}
-
