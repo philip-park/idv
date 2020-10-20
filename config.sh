@@ -51,7 +51,7 @@ function config_main() {
     done
 
     # add setup
-    mainlist+=( "Qemu" "Create install & startup qemu scripts" "Will populate /var/vm/scripts directory" )
+#    mainlist+=( "Qemu" "Create install & startup qemu scripts" "Will populate /var/vm/scripts directory" )
 
     # add systemd auto start option
 #    mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
@@ -74,12 +74,12 @@ function config_main() {
         for (( i=0; i<${#gfx_port[@]}; i++ )); do
           [[ "$opt" == "${gfx_port[$i]##*=}" ]] && run_all "${vgpu_port[$i]%=*}"
         done ;;
-      Qemu)
-        source ./setup.sh;;
+ #     Qemu)
+ #       source ./setup.sh;;
 
 #      Systemd)
 #        source $cdir/systemd/config-systemd.sh;;
-      Exit)  rm -f $tempfile; exit 0 ;;
+      Exit)  rm -f $tempfile; source ./setup.sh; exit 0 ;;
     esac
   done
 
