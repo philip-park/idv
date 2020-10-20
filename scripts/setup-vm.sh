@@ -131,10 +131,10 @@ function create_files() {
   local vgpuinfo=$1
   echo "create_file: temp: $vgpuinfo, $cdir"
 
-  dialog --yesno "Continue to overwrite $vmdir?" 10 40 
-  if [[ $? -eq 0 ]]; then
+#  dialog --yesno "Continue to overwrite $vmdir?" 10 40 
+#  if [[ $? -eq 0 ]]; then
     build_install_qemu_batch "$vgpuinfo"
     build_start_qemu_batch "$vgpuinfo"
-  fi
+#  fi
 }
 
