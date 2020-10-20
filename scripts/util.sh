@@ -19,7 +19,7 @@ cdir=$(pwd)
 vmroot=/var
 #vmroot=$cdir
 vmdir="$vmroot/vm"
-
+kdir="kernel"
 #===============================================
 # Fixed Kernel repo supported by IDV solution
 #===============================================
@@ -41,6 +41,7 @@ function update_idv_config() {
 
 function run_as_root() {
   cmd=$1
+echo "cmd: ($EUID) $cmd"
   if [[ $EUID -eq 0 ]];then
     ($cmd)
   else

@@ -32,12 +32,14 @@ source $idv_config_file
 source $cdir/scripts/install-docker.sh
 
 # delete linux*.deb file before building new
-( rm -rf linux*.deb )
-
+run_as_root "rm -rf linux*.deb"
+run_as_root "rm -rf $kdir"
+ 
 # run docker as user to build kernel
 run_as_root "docker run --rm -v $cdir:/build \
         -u $(id -u ${USER}):$(id -g ${USER}) \
-       --name bob mydocker/bob_the_builder  bash -c \"cd /build/docker; ./build-docker.sh\""
+       --name bob mydocker/bob_the_builder"
+#       --name bob mydocker/bob_the_builder  bash -c \"cd /build/docker; ./build-docker.sh\""
 
 debs=$( ls $cdir/*.deb )
 echo "${yellow}$debs${NC}"

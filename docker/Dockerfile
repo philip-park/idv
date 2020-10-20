@@ -23,4 +23,4 @@ RUN apt-get update \
 	gcc-s390x-linux-gnu gcc-alpha-linux-gnu \
 	libc6.1-dev-alpha-cross gcc-powerpc64-linux-gnu rsync libelf-dev\
  && apt-get clean
-
+ENTRYPOINT ["/bin/bash", "-c", "cd /build/docker; ./build-docker.sh"]
