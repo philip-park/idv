@@ -21,6 +21,7 @@ function install_kernel() {
 [[ $1 == "install" ]] && install_kernel && exit 0
 
 run_as_root "apt install dialog"
+run_as_root "apt install acl"
 
 echo "idv config file: $idv_config_file"
 source $idv_config_file
