@@ -5,6 +5,7 @@ source ./scripts/util.sh
 
 grubfile="/etc/default/grub"
 tempfile="./temp"
+grub_modified=0
 
 function grub_setup() {
   opts=(i915.enable_gvt=1 kvm.ignore_msrs=1 intel_iommu=on,igfx_off drm.debug=0 consoleblank=0)
@@ -15,7 +16,6 @@ function grub_setup() {
   cmdline=${cmdline##*GRUB_CMDLINE_LINUX=} # Capture strings after "GRUB_CMDLINE_LINUX="
   cmdline="${cmdline%\"}"   # Remove the suffix "
 
-  grub_modified=0
   for i in "${opts[@]}"; do
     if !(grep -q $i <<< "$cmdline"); then
       grub_modified=1
@@ -27,7 +27,7 @@ function grub_setup() {
     cmdline="GRUB_CMDLINE_LINUX=$cmdline\""
     sed -i "/.*GRUB_CMDLINE_LINUX=.*/c $cmdline" $tempfile
     run_as_root "cp -f $tempfile $grubfile"
-    run_as_root "update-grub2"
+#    run_as_root "update-grub2"
   fi
   rm -f $tempfile
 }
@@ -61,8 +61,8 @@ function update_grub_kernel() {
             --radiolist "Select kernel to boot. /etc/default/grub will be updated"  20 80 10 \
             "${list[@]}" \
             3>&1 1>&2 2>&3 )
-  [[ "$?" -ne 0 ]] && exit 0  # cancel pressed
-
+  [[ "$?" -ne 0 ]] && exit 0 || grub_modified=1
+ 
   # for now, we assume we have one submenu
   submenu=($(grep -E 'submenu ' /boot/grub/grub.cfg | cut -f 2 -d "'"))
   grub_default="GRUB_DEFAULT=\"$submenu>${list[$((option*3+1))]}\""
@@ -73,10 +73,11 @@ function update_grub_kernel() {
   cp -f $grubfile $tempfile
   sed -i "/^GRUB_DEFAULT=.*/c $grub_default" $tempfile
   run_as_root "cp -f $tempfile $grubfile"
-  run_as_root "update-grub2"
+#  run_as_root "update-grub2"
   rm -f $tempfile
 }
 
+grub_setup
 update_grub_kernel
-
-
+ 
+#[[ "$grub_modified" -eq 1 ]] && run_as_root "update-grub2"

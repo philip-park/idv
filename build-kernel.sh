@@ -10,6 +10,8 @@ function install_kernel() {
 
   run_as_root "dpkg -i *.deb"
 
+  source ./grub-setup.sh
+
   echo "reboot in 5 seconds. Control + C to abort.."
   sleep 5
   run_as_root "reboot" 
