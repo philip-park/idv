@@ -5,28 +5,9 @@ source scripts/util.sh
 [[ "$1" == "clean" ]] && clean && exit 0
 
 
-#===============================================
-# Fixed Kernel repo supported by IDV solution
-#===============================================
-#kernel_repo+=("Vanilla" "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git" off "v5.4.54")
-#kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off "lts-v5.4.57-yocto-200819T072823Z")
-
-
 function run_all() {
   portinfo=$1
 
-  # install enough package to start config
-#  run_as_root "apt install uuid"
-
-  # install qemu-system-x86 and copy firmware to /var/vm/fw
-#  build_vm_directory
-
-  #source scripts/config-kernel.sh
-  #================================================
-  # VGPU mask setting based on mdev_type user input
-  #================================================
-  #source scripts/config-select-vgpu.sh
-#  source $cdir/scripts/config-mdev-type.sh
 	source $cdir/scripts/config-iso-option.sh
 	get_iso_file "$portinfo"
 
@@ -55,9 +36,6 @@ function config_main() {
   gfx_port=($(grep "^GFX_PORT=" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting
   vgpu_port=( $(grep "^VGPU" $idv_config_file) )
 
-  # add kernel option to the menu
-  #  mainlist+=( "Kernel" "Kernel option config (for Kernel build.sh)" "This option is only for kernel build." )
-
   # add GVTg port option
   if [[ ${#gfx_port[@]} -ne 0 ]]; then
     # add MDEV type option
@@ -74,7 +52,7 @@ function config_main() {
     # add systemd auto start option
     mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
   else
-    dialog --msgbox "IDV GVTg can't detect monitor/s. Please connect monitor/s.\n\n" 10 40 && exit 1
+    dialog --msgbox "Can't detect monitor/s. Neither GVTg kernel is not installed nor monitor/s connected.\n\n" 10 40 && exit 1
   fi
 
   # add exit option
@@ -87,7 +65,6 @@ function config_main() {
     [[ $? -eq 1 ]] && break # Cancel selected
 
     case $opt in
-      Kernel)  source $cdir/scripts/config-kernel.sh ;;
       Mdev) source $cdir/scripts/config-mdev-type.sh;;
       PORT_A|PORT_B|PORT_C|PORT_D)
         for (( i=0; i<${#gfx_port[@]}; i++ )); do

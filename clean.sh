@@ -5,9 +5,10 @@ source $idv_config_file
 
 
 function clean() {
+  sudo apt purge -y docker-ce docker-ce-cli containerd.io
   sudo apt purge -y dialog
   sudo apt purge -y acl
-  sudo apt purge -y docker-ce docker-ce-cli containerd.io
+  sudo apt purge -y uuid
 
   docker_image_id=$(docker images -q mydocker/bob_the_builder)
   sudo docker rmi $docker_image_id
