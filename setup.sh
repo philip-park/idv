@@ -15,6 +15,7 @@ function clean() {
 
 [[ "$1" == "clean" ]] && clean && exit 0
 
+#if mdev directory not exist then exit
+[[ ! -d /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types ]] && exit 1
 
-#source $cdir/systemd/setup-vgpu-systemd.sh
 source $cdir/systemd/config-systemd.sh
