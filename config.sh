@@ -20,8 +20,12 @@ function run_all() {
 # gfx_port is ports detected by IDV gvt_port_disp_status
 # vgpu_port is guid. (TBD: need to change it to vgpu_guid)
 #=========================================================
+tempfile=./temp
 function config_main() {
   unset mainlist
+
+  # save as backup
+  cp $idv_config_file $tempfile
 
   # install enough package to start config
   run_as_root "apt -y install uuid"
@@ -47,22 +51,22 @@ function config_main() {
     done
 
     # add setup
-    mainlist+=( "Setup" "Minimum setup VM without systemd" "Sets up initial qemu scripts and populate vm directory" )
+    mainlist+=( "Qemu" "Create install & startup qemu scripts" "Will populate /var/vm/scripts directory" )
 
     # add systemd auto start option
-    mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
+#    mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
   else
     dialog --msgbox "Can't detect monitor/s. Neither GVTg kernel is not installed nor monitor/s connected.\n\n" 10 40 && exit 1
   fi
 
   # add exit option
-  mainlist+=( "Exit" "Exit config menu" "Exit the configuration" )
+  mainlist+=( "Exit" "Save and Exit" "Exit the configuration" )
 
   while true ; do
     opt=$(dialog --item-help --keep-tite --menu "Select configuration options" 20 80 10 \
             "${mainlist[@]}" 3>&1 1>&2 2>&3 )
 
-    [[ $? -eq 1 ]] && break # Cancel selected
+    [[ "$?" -ne 0 ]] && cp $tempfile $idv_config_file && rm -f $tempfile && break # Cancel selected
 
     case $opt in
       Mdev) source $cdir/scripts/config-mdev-type.sh;;
@@ -70,14 +74,16 @@ function config_main() {
         for (( i=0; i<${#gfx_port[@]}; i++ )); do
           [[ "$opt" == "${gfx_port[$i]##*=}" ]] && run_all "${vgpu_port[$i]%=*}"
         done ;;
-      Setup)
+      Qemu)
         source ./setup.sh;;
 
-      Systemd)
-        source $cdir/systemd/config-systemd.sh;;
-      Exit)  exit 0 ;;
+#      Systemd)
+#        source $cdir/systemd/config-systemd.sh;;
+      Exit)  rm -f $tempfile; exit 0 ;;
     esac
   done
+
+  rm -f $tempfile
 }
 
 config_main

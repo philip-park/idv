@@ -9,6 +9,7 @@ function clean() {
   sudo apt purge -y dialog
   sudo apt purge -y acl
   sudo apt purge -y uuid
+  sudo apt purge -y qemu-system-x86
 
   docker_image_id=$(docker images -q mydocker/bob_the_builder)
   sudo docker rmi $docker_image_id
