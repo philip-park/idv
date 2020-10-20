@@ -21,3 +21,7 @@ function build_docker() {
 install_docker
 build_docker
 
+run_as_root "groupadd docker"
+run_as_root "usermod -aG docker $USER"
+newgrp docker
+
