@@ -61,8 +61,12 @@ function install_packages() {
 function build_fw_directory() {
   run_as_root "apt-get install -y qemu-system-x86"
 
-  [[ -f /usr/share/qemu/bios.bin ]] && run_as_root "cp /usr/share/qemu/bios.bin $vmdir/fw" \
-      || echo "Error: can't find /usr/share/qemu/bios.bin file"
+  if [[ -f /usr/share/qemu/bios.bin ]]; then
+    run_as_root "cp /usr/share/qemu/bios.bin $vmdir/fw"
+  elif [[ -f /usr/share/seabios/bios.bin ]]; then
+    run_as_root "cp /usr/share/seabios/bios.bin $vmdir/fw"
+  fi
+    
   [[ -f /usr/share/qemu/OVMF.fd ]] && run_as_root "cp /usr/share/qemu/OVMF.fd $vmdir/fw" \
       || echo "Error: can't find /usr/share/qemu/OVMF.fd file"
 }
