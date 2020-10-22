@@ -118,7 +118,9 @@ function build_start_qemu_batch() {
 
   str+=( "-cpu host -usb -device usb-tablet \\" )
 
-  usb_opt=($(grep "^QEMU_USB_$vgpu" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting
+  temp=$(grep "^QEMU_USB_$vgpu" $idv_config_file) # remove double quote from option sting
+  temp=${temp##*=\"}
+  usb_opt=${temp%\"*}
   [[ ! -z $usb_opt ]] && str+=( "$usb_opt \\" )
 
   vgpu_guid=($(grep "^$vgpu" $idv_config_file))
