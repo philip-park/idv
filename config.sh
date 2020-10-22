@@ -34,7 +34,7 @@ function config_main() {
   build_vm_directory
 
   run_as_root "apt -y install dialog"  # make sure dialog is installed
-  source $cdir/scripts/config-select-vgpu.sh  # get vgpu, gfx port, and port mask info
+  source $cdir/scripts/config-vgpu.sh  # get vgpu, gfx port, and port mask info
 
   # gfx_port is ports detected by IDV gvt_port_disp_status
   gfx_port=($(grep "^GFX_PORT=" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting

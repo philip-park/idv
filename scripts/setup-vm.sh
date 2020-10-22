@@ -62,6 +62,12 @@ echo "install qemu: $vgpu"
   fw_opt=($(grep "FW_$vgpu" $idv_config_file))
   str+=( "-bios ${fw_opt##*=} \\" )
 
+  # for q35, defaults to q35
+  str+=( "-global ICH9-LPC.disable_s3=1 -global ICH9-LPC.disable_s4=1 \\" )
+  
+  # all other machine type
+#  str+=( "-global PIIX4_PM.disable_s3=1 -global PIIX4_PM.disable_s4=1 \\")
+
   str+=( "-cpu host -usb -device usb-tablet \\" )
   str+=( "-vga cirrus \\" )
   str+=( "-k en-us \\" )
@@ -103,6 +109,13 @@ function build_start_qemu_batch() {
   str+=( "-vga none \\" )
   str+=( "-k en-us \\" )
   str+=( "-vnc :0 \\" )
+
+  # for q35, defaults to q35
+  str+=( "-global ICH9-LPC.disable_s3=1 -global ICH9-LPC.disable_s4=1 \\" )
+  
+  # all other machine type
+#  str+=( "-global PIIX4_PM.disable_s3=1 -global PIIX4_PM.disable_s4=1 \\")
+
   str+=( "-cpu host -usb -device usb-tablet \\" )
 
   usb_opt=($(grep "^QEMU_USB_$vgpu" $idv_config_file | grep -oP '(?<=").*(?=")')) # remove double quote from option sting

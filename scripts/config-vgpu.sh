@@ -13,7 +13,7 @@
 # scripts/custom-function for selectWithDefault
 #===========================================
 #idv_config_file=./test
-function update_idv_config_1() {
+function update_idv_config_deleteme() {
   variable=$1
   string=$2
 
@@ -22,7 +22,7 @@ function update_idv_config_1() {
       || echo "$variable=$string" >> $idv_config_file
 }
 
-function select_mdev_type() {
+function select_mdev_type_deleteme() {
   mdev_type=( /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/i915-GVTg_V5_* )
   # This actually the total number of available node and set to default node
   current_option=${#mdev_type[@]}
@@ -56,6 +56,9 @@ function set_display_port_mask() {
   for (( i=0; i<8; i++)); do
     nibble=$((ports&0xf)); ports=$((ports>>4))
 
+#    guid=$( grep "^VGPU$i=" $idv_config_file )
+#    [[ ! -z ${guid##*=} ]] && continue && echo "same guil"
+
     if [[ $nibble -ne "0" ]]; then
       string="`grep -A $i "Available" $card0`"  # ( PORT_B(2) )
       temp=$(sed 's/.*( \(.*\) )/\1/' <<< "${string##*$'\n'}")
@@ -63,7 +66,11 @@ function set_display_port_mask() {
       gfx_port+=( "${temp%(*}" )
       port_num=$(sed 's/.*(\(.*\))/\1/' <<< "${temp}")
       port_mask="0$((1<<(port_num-1)))"$port_mask
-      update_idv_config "VGPU$i" "$(uuid)"
+
+      # if UUID already *not" exists then update
+      guid=$( grep "^VGPU$i=" $idv_config_file )
+      [[ -z ${guid##*=} ]] && update_idv_config "VGPU$i" "$(uuid)"
+#      update_idv_config "VGPU$i" "$(uuid)"
 #      detected=1
     fi
   done
