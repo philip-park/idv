@@ -3,7 +3,7 @@
 source ./scripts/util.sh
 
 function install_kernel() {
-  debs=$( ls $cdir/*.deb )
+  debs=$( ls -R $cdir/*.deb 2>/dev/null )
   echo "${yellow}$debs${NC}"
 
   [[ -z "$debs" ]] && echo -e "${red}✖${NC} Can't find *.deb file" && exit 1
