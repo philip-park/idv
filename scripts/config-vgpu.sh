@@ -53,6 +53,7 @@ function set_display_port_mask() {
 
 #  detected=0
   port_mask=""
+  j=1
   for (( i=0; i<8; i++)); do
     nibble=$((ports&0xf)); ports=$((ports>>4))
 
@@ -60,7 +61,7 @@ function set_display_port_mask() {
 #    [[ ! -z ${guid##*=} ]] && continue && echo "same guil"
 
     if [[ $nibble -ne "0" ]]; then
-      string="`grep -A $i "Available" $card0`"  # ( PORT_B(2) )
+      string="`grep -A $j "Available" $card0`"  # ( PORT_B(2) )
       temp=$(sed 's/.*( \(.*\) )/\1/' <<< "${string##*$'\n'}")
 
       gfx_port+=( "${temp%(*}" )
@@ -72,6 +73,7 @@ function set_display_port_mask() {
       [[ -z ${guid##*=} ]] && update_idv_config "VGPU$i" "$(uuid)"
 #      update_idv_config "VGPU$i" "$(uuid)"
 #      detected=1
+      j=$((j+1))
     fi
   done
   echo "gfx_port: ${gfx_port[@]}"
