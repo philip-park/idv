@@ -5,6 +5,7 @@ idv_config_file=./.idv-config
 [[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
 
 source $idv_config_file
+retStatus=""
 
 #==========================================
 # Set default kernel repo 
@@ -41,6 +42,7 @@ function get_patch_file() {
     [[ $patch_file == $patches ]] && list+=($idx "$patch_file" on) || list+=($idx "$patch_file" off)
     idx=$((idx+1))
   done
+echo "get_patch_file"
 #-------------------------------
   # display the option to user
   option_patch=$(dialog --backtitle "Select patches file" \
@@ -48,16 +50,14 @@ function get_patch_file() {
 Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
             "${list[@]}" \
             3>&1 1>&2 2>&3 )
-#echo "results from patch file: $?"
-  if [[ $? -ne 1  ]]; then # okay pressed
-echo "patch procssing"
-    [[ -z $option_patch || $option_patch -eq "0" ]] && patches="" || patches=${list[$((option_patch*3+1))]}
 
-    echo "results from patch file: $?"
-    (grep -qF "patches=" $idv_config_file) \
+  [[ $? -ne 0 ]] && retStatus="Cancel" && return
+  [[ -z $option_patch || $option_patch -eq "0" ]] && patches="" || patches=${list[$((option_patch*3+1))]}
+
+#  echo "results from patch file: $?"
+  (grep -qF "patches=" $idv_config_file) \
       && sed -i "s/^patches=.*$/patches=$patches/" $idv_config_file \
-      ||    echo "patches=$patches" >> $idv_config_file
-  fi
+        ||    echo "patches=$patches" >> $idv_config_file
 }
 
 #================================================================
@@ -78,7 +78,7 @@ function kernel_options() {
 "${kernel_repo[@]}" \
     3>&1 1>&2 2>&3 )
 
-  [[ $? -eq 1  ]] && return
+  [[ $? -ne 0  ]] && echo "Cancel" && return
 
   # Replace or add with updated repo and branch information
   for (( i=0; i<${#kernel_repo[@]}; i += 4 )); do
@@ -105,12 +105,17 @@ kernel_source="$(kernel_options)"
 
 # IOTG build shouldn't need patch
 case $kernel_source in
-  Vanilla) get_patch_file;;
+  Vanilla) unset retStatus; get_patch_file; echo "local retvbal : $retStatus"; 
+    [[ $retStatus == "Cancel" ]] && exit 1
+    ;;
   IOTG-repo)
     echo "kernel source: $kernel_source"
       (grep -qF "patches=" $idv_config_file) \
         && sed -i "s/^patches=.*$/patches=/" $idv_config_file \
         || echo "patches=" >> $idv_config_file;;
+  Cancel)
+    exit 1
+    ;;
 esac
 
 
@@ -119,6 +124,6 @@ esac
 #==============================================
 source $idv_config_file
 
-echo "results: patches: '$result', $patches, option: $kernel_source"
+#echo "results: patches: '$result', $patches, option: $kernel_source"
  
 
