@@ -67,7 +67,7 @@ echo "install qemu: $vgpu"
   
   # all other machine type
 #  str+=( "-global PIIX4_PM.disable_s3=1 -global PIIX4_PM.disable_s4=1 \\")
-
+  str+=( "-net nic" )
   str+=( "-cpu host -usb -device usb-tablet \\" )
   str+=( "-vga cirrus \\" )
   str+=( "-k en-us \\" )
