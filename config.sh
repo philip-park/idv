@@ -85,5 +85,5 @@ function config_main() {
 
   rm -f $tempfile
 }
-
+run_as_root "apt install bridge-utils dnsmasq"
 config_main
