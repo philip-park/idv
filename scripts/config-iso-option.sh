@@ -1,27 +1,30 @@
 #!/bin/bash
-
 source scripts/util.sh
 
-_iso_="$cdir/iso/*.iso"
+#_iso_="$cdir/iso/*.iso"
+_iso_="$cdir/iso/*"
 QEMU_IMG="/usr/bin/qemu-img"
 #====================================================
 # Create *.qcow2 file if user select the ISO file
 #====================================================
 function get_iso_file() {
-  isofiles=( $_iso_ )
+#  isofiles=( $_iso_ )
+  isofiles=($( ls $cdir/iso/* 2>/dev/null ))
   vgpuinfo=$1
   low_vgpu="$( echo $vgpuinfo | tr '[:upper:]' '[:lower:]' )"
 	unset list
 
-  [[ ${isofiles[0]} == "$_iso_" ]] && update_idv_config "GUEST_ISO_$vgpuinfo" "" \
+#  [[ ${isofiles[0]} == "$_iso_" ]] && update_idv_config "GUEST_ISO_$vgpuinfo" "" \
+  [[ -z "$isofiles" ]] && update_idv_config "GUEST_ISO_$vgpuinfo" "" \
     && dialog --msgbox "Can't find ISO files in $cdir/iso. Please download guest OS ISO file to $cdir/iso\n\n" 10 40 && exit 1
 
   for (( i=0; i<${#isofiles[@]}; i++ )); do
     list+=($i "${isofiles[$i]##*\/}" off "${isofiles[$i]}")
+#    list+=($i "${isofiles[$i]}" off "${isofiles[$i]}")
     echo "($i)list: ${list[@]}"
   done
 
-  cmd=(dialog --item-help --radiolist "Please choose ISO files from ./iso for your guest OS." 30 80 5)
+  cmd=(dialog --item-help --radiolist "Please choose Windows and Ubuntu in ISO files, or *.tar.gz for Android located in ./iso directory for your guest OS." 30 80 5)
   list=(${list[@]})
   choices=$("${cmd[@]}" "${list[@]}" 2>&1 >/dev/tty)
 
