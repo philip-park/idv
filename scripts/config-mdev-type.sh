@@ -49,34 +49,6 @@ Select the mdev type from the following list found in ~/mdev_supported_types."  
   update_idv_config "mdev_type" "$mdev_type_option"
 }
 
-function set_display_port_mask_deleteme() {
-  card0=( /sys/devices/pci0000\:00/0000\:00\:02.0/drm/card0/gvt_disp_ports_status )
-  available_ports=$(grep "Available display ports" $card0)
-  ports="${available_ports#*: }"
-
-  detected=0
-  port_mask=""
-  for (( i=0; i<8; i++)); do
-    nibble=$((ports&0xf)); ports=$((ports>>4))
-
-    if [[ $nibble -ne "0" ]]; then
-      string="`grep -A $i "Available" $card0`"  # ( PORT_B(2) )
-      temp=$(sed 's/.*( \(.*\) )/\1/' <<< "${string##*$'\n'}")
-
-vgpu_port+=( "$temp" )
-echo "0port status temp: $temp"
-      port_num=$(sed 's/.*(\(.*\))/\1/' <<< "${temp}")
-echo "1port status temp: $temp"
-      port_mask="0$((1<<(port_num-1)))"$port_mask
-echo "2port status temp: $temp"
-      update_idv_config "VGPU$i" "$(uuid)"
-      detected=1
-    fi
-  done
-  update_idv_config "VGPU_PORT" "${vgpu_port[@]}"
-  update_idv_config "port_mask" "0x$port_mask"
-}
-
 #set_display_port_mask
 select_mdev_type
 
