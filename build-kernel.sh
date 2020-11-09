@@ -20,9 +20,6 @@ function install_kernel() {
 # check for install option.
 [[ $1 == "install" ]] && install_kernel && exit 0
 
-run_as_root "apt install dialog"
-run_as_root "apt install acl"
-
 echo "idv config file: $idv_config_file"
 source $idv_config_file
 
@@ -30,7 +27,7 @@ source $idv_config_file
 #source $cdir/scripts/config-modules.sh
 
 # if repo is not set, then run config-kernel to get option for kernel repo
-[[ -z $repo || -z $branch ]] && source $cdir/scripts/config-kernel.sh
+[[ -z $repo || -z $branch ]] && run_as_root "apt install dialog acl"; source $cdir/scripts/config-kernel.sh
 
 # Install docker to host if not installed
 source $cdir/scripts/install-docker.sh
