@@ -55,7 +55,7 @@ function install_kernel() {
 }
 
 function sriov_system() {
-
+  echo "TBD: add sriov support here"
 
 }
 
