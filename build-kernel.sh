@@ -54,7 +54,14 @@ function install_kernel() {
   esac
 }
 
-build_kernel
+function sriov_system() {
+
+
+}
+
+pmc=$(cat /sys/devices/cpu/caps/pmu_name)
+[[ $pmc == "icelake" ]] && sriov_system || build_kernel
+
 install_kernel
 
 
