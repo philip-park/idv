@@ -51,6 +51,17 @@ EOF
    fi
 }
 
+
+function progressshow ()
+{
+  local flag=false c count cr=$'\r' nl=$'\n'
+  while IFS='' read -d '' -rn 1 c
+  do
+    [[ $flag == "true" ]] && printf '%s' "$c" || \
+        [[ $c != $cr && $c != $nl ]] && count=0 || ((count++)); [[ "$count" -gt 1 ]] && flag=true
+  done
+}
+
 function install_packages() {
   echo "${green}Installing packages needed.. may take some time.${NC}"
     run_as_root "apt -y autoremove" #&>/dev/null"
