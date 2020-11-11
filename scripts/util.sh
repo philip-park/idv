@@ -15,11 +15,18 @@ NC=`tput sgr0`
 #=================================
 # global variable shared among scripts
 #=================================
+version="0.8"
+krevision="3.0"
+kversion="intelgvt"
+
 cdir=$(pwd)
 vmroot=/var
 #vmroot=$cdir
 vmdir="$vmroot/vm"
 kdir="kernel"
+builddir="$cdir/build"
+patchdir="$cdir/build/patches"
+
 #===============================================
 # Fixed Kernel repo supported by IDV solution
 #===============================================

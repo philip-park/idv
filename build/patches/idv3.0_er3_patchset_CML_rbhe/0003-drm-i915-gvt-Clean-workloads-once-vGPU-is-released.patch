@@ -1,0 +1,39 @@
+From d8fe3c9b8f09dec19dbbe99ff25d93e9c627dcfb Mon Sep 17 00:00:00 2001
+From: fred gao <fred.gao@intel.com>
+Date: Tue, 11 Dec 2018 14:37:04 +0800
+Subject: [PATCH 03/24] drm/i915/gvt: Clean workloads once vGPU is released
+
+The pending workloads after vGPU is not scheduled will be
+resubmmitted to HW GPU and GPU hang happens.
+
+(cherry picked from commit f92e665225e9b2b109b5bcc274554d81cd6abb18)
+
+Signed-off-by: Colin Xu <colin.xu@intel.com>
+(cherry picked from commit 25f469818a389384ab2c0eb3281a8e492430ed8c)
+Signed-off-by: Colin Xu <colin.xu@intel.com>
+(cherry picked from commit 07d4e90fea2d4ba1bf61b8e1707319e95f8d6fbd)
+Signed-off-by: Colin Xu <colin.xu@intel.com>
+---
+ drivers/gpu/drm/i915/gvt/vgpu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/gpu/drm/i915/gvt/vgpu.c b/drivers/gpu/drm/i915/gvt/vgpu.c
+index 32e57635709a..236f70e5c3cf 100644
+--- a/drivers/gpu/drm/i915/gvt/vgpu.c
++++ b/drivers/gpu/drm/i915/gvt/vgpu.c
+@@ -239,6 +239,12 @@ void intel_gvt_deactivate_vgpu(struct intel_vgpu *vgpu)
+ 
+ 	intel_vgpu_stop_schedule(vgpu);
+ 
++	/**
++	* the pending workloads might be resubmitted to HW GPU before cleanup
++	* @intel_gvt_reset_vgpu_locked once start schedule.
++	*/
++	intel_vgpu_clean_workloads(vgpu, ALL_ENGINES);
++
+ 	mutex_unlock(&vgpu->vgpu_lock);
+ }
+ 
+-- 
+2.17.1
+

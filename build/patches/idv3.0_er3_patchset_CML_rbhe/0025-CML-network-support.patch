@@ -1,0 +1,32 @@
+diff -ruN ../temp/drivers/net/ethernet/intel/e1000e/hw.h ./drivers/net/ethernet/intel/e1000e/hw.h
+--- ../temp/drivers/net/ethernet/intel/e1000e/hw.h	2020-07-31 12:13:08.692290217 -0700
++++ ./drivers/net/ethernet/intel/e1000e/hw.h	2020-07-31 12:19:27.652083777 -0700
+@@ -86,6 +86,12 @@
+ #define E1000_DEV_ID_PCH_ICP_I219_V8		0x15E0
+ #define E1000_DEV_ID_PCH_ICP_I219_LM9		0x15E1
+ #define E1000_DEV_ID_PCH_ICP_I219_V9		0x15E2
++#define E1000_DEV_ID_PCH_CMP_I219_LM10		0x0D4E
++#define E1000_DEV_ID_PCH_CMP_I219_V10		0x0D4F
++#define E1000_DEV_ID_PCH_CMP_I219_LM11		0x0D4C
++#define E1000_DEV_ID_PCH_CMP_I219_V11		0x0D4D
++#define E1000_DEV_ID_PCH_CMP_I219_LM12		0x0D53
++#define E1000_DEV_ID_PCH_CMP_I219_V12		0x0D55
+ 
+ #define E1000_REVISION_4	4
+ 
+diff -ruN ../temp/drivers/net/ethernet/intel/e1000e/netdev.c ./drivers/net/ethernet/intel/e1000e/netdev.c
+--- ../temp/drivers/net/ethernet/intel/e1000e/netdev.c	2020-07-31 12:13:08.696290252 -0700
++++ ./drivers/net/ethernet/intel/e1000e/netdev.c	2020-07-31 12:21:21.521189262 -0700
+@@ -7568,6 +7568,12 @@
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ICP_I219_V8), board_pch_cnp },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ICP_I219_LM9), board_pch_cnp },
+ 	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_ICP_I219_V9), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_LM10), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_V10), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_LM11), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_V11), board_pch_cnp },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_LM12), board_pch_spt },
++	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_PCH_CMP_I219_V12), board_pch_spt },
+ 
+ 	{ 0, 0, 0, 0, 0, 0, 0 }	/* terminate list */
+ };

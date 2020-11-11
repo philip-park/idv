@@ -23,26 +23,36 @@ function install_kernel() {
 echo "idv config file: $idv_config_file"
 source $idv_config_file
 
-function build_kernel() {
 
-  # if repo is not set, then run config-kernel to get option for kernel repo
-  if [[ -z "$repo" || -z "$branch" ]]; then
-    run_as_root "apt install dialog acl"
-    source $cdir/scripts/config-kernel.sh
-  fi
+#-------------------------------------
+# Prepare the build environment
+#-------------------------------------
+function prep_build() {
+  dialog=$( dpkg -l | grep -w " dialog " )
+  [[ -z $dialog ]] && run_as_root "apt-get install dialog"
+  acl=$( dpkg -l | grep -w " acl " )
+  [[ -z $acl ]] && run_as_root "apt-get install acl"
 
-  # Install docker to host if not installed
-  source $cdir/scripts/install-docker.sh
+#  docker=$( dpkg -l | grep -w " docker " )
+#  [[ -z $docker ]] && source $cdir/scripts/install-docker.sh
 
-  # delete linux*.deb file before building new
-  run_as_root "rm -rf linux*.deb"
-  run_as_root "rm -rf $kdir"
- 
+  [[ -z "$repo" || -z "$branch" ]] && source $cdir/scripts/config-kernel.sh
+}
+
+#-------------------------------------
+# Build source code using docker
+#-------------------------------------
+function build_kernel_deleteme() {
+
+  docker=$( dpkg -l | grep -w " docker " )
+  [[ -z $docker ]] && source $cdir/scripts/install-docker.sh
+
   # run docker as user to build kernel
-  run_as_root "docker run --rm -v $cdir:/build \
+#  run_as_root "docker run --rm -v $cdir:/build \
+  run_as_root "docker run --rm -v $cdir:$cdir \
         -u $(id -u ${USER}):$(id -g ${USER}) \
-       --name bob mydocker/bob_the_builder"
-#       --name bob mydocker/bob_the_builder  bash -c \"cd /build/docker; ./build-docker.sh\""
+       --name bob mydocker/bob_the_builder  bash -c \"cd $cdir/docker; ./build-docker.sh\""
+#       --name bob mydocker/bob_the_builder"
 }
 
 function install_kernel() {
@@ -63,9 +73,23 @@ function sriov_system() {
 
 }
 
-pmc=$(cat /sys/devices/cpu/caps/pmu_name)
-[[ $pmc == "icelake" ]] && sriov_system || build_kernel
+prep_build
+#source ./idv-common
+#pmc=$(cat /sys/devices/cpu/caps/pmu_name)
+#[[ $pmc == "icelake" ]] && sriov_system || build_kernel
+source $cdir/scripts/source-manager.sh
 
-install_kernel
+# display current settings before move on
+display_settings
 
+# get kernel source
+#download_kernel
+
+# get qemu source
+download_qemu
+
+# build kernel/qemu
+build_sources
+
+#install_kernel
 

@@ -59,22 +59,22 @@ function pull_kernel() {
 # 5) Apply patches if specified
 #================================================
 function apply_patches() {
-if [ -d "${patches%.tar.gz}" ]; then
-  # if patches directory exists
-  echo "${green} -- patching from a ${patches%.tar.gz} directory ...${NC}"
+  if [ -d "${patches%.tar.gz}" ]; then
+    # if patches directory exists
+    echo "${green} -- patching from a ${patches%.tar.gz} directory ...${NC}"
 
-  ( cd $kdir && git reset --hard )
-  git apply --directory=$kdir $cdir/${patches%.tar.gz}/*
+    ( cd $kdir && git reset --hard )
+    git apply --directory=$kdir $cdir/${patches%.tar.gz}/*
 
-elif [ -f "$patches" ]; then
-  # if .tar.gz file exists
-  echo "${green} -- patching from $patches file ...${NC}"
+  elif [ -f "$patches" ]; then
+    # if .tar.gz file exists
+    echo "${green} -- patching from $patches file ...${NC}"
 
-  tar xzvf $cdir/$patches
-  ( cd $kdir && git reset --hard )
-  git apply --directory=$kdir $cdir/${patches%.tar.gz}/*
-else
-  echo "${green} -- No patches is applied ...${NC}"
+    tar xzvf $cdir/$patches
+    ( cd $kdir && git reset --hard )
+    git apply --directory=$kdir $cdir/${patches%.tar.gz}/*
+  else
+    echo "${green} -- No patches is applied ...${NC}"
 fi
 }
 

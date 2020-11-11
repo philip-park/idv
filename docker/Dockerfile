@@ -20,7 +20,7 @@ RUN apt-get update \
 	libseccomp-dev librdmacm-dev libibverbs-dev libibumad-dev \
  	libusbredirparser-dev libssh-dev libxen-dev nettle-dev \
 	uuid-dev xfslibs-dev libjpeg-dev libpmem-dev \
-	gcc-s390x-linux-gnu gcc-alpha-linux-gnu \
+	gcc-s390x-linux-gnu gcc-alpha-linux-gnu net-tools \
 	libc6.1-dev-alpha-cross gcc-powerpc64-linux-gnu rsync libelf-dev\
  && apt-get clean
-ENTRYPOINT ["/bin/bash", "-c", "cd /build/docker; ./build-docker.sh"]
+#ENTRYPOINT ["/bin/bash", "-c", "cd /build/docker; ./build-docker.sh"]

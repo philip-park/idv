@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./idv-common
+
 default_config=./scripts/idv-config-default
 idv_config_file=./.idv-config
 [[ -f "./.idv-config" ]] && default_config="./.idv-config" || touch ./.idv-config
@@ -28,7 +30,7 @@ function get_patch_file() {
   # build the options for dialogget list of patch files in currect directory
 #-------------------------------
 
-  files=( *.tar.gz )
+  files=$( ls $patchdir/*.tar.gz )
 
   local -a list=()
   # case 1, no patch found
