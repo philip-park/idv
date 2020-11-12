@@ -87,7 +87,7 @@ display_settings
 
 # get qemu source
 download_qemu
-
+echo "cdir: $cdir"
 # build kernel/qemu
 build_sources
 

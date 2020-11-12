@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source ./scripts/util.sh
-source ./idv-common
+#source ./idv-common
 
 version="0.7"
 echo "${green}Current working directory : $cdir${NC}"
@@ -60,13 +60,17 @@ function download_qemu() {
 echo "dir: $PWD"
   cd "$builddir"
 
-  [[ ! -z "$builddir/$qemu_dir" ]] && find $builddir/$qemu_dir -type d -name "$qemu_dir" -exec rm -rf {} +
+  run_as_root "apt-get install -y pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev  libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison make libiscsi-dev librbd-dev libaio-dev"
+  [[ ! -z "$builddir/$qemu_dir" ]] && find $builddir/$qemu_dir -type d -name "$qemu_dir" -exec sudo rm -rf {} +
 #  find $patchdir -type d -name "$qemu_dir" -exec rm -rf {} +
 
   # pull tree
-  git clone --depth 1 $qemu_source --branch $qemubranch --single-branch $qemu_dir
+#  git clone --depth 1 $qemu_source --branch $qemubranch --single-branch $qemu_dir
+   git clone $qemu_source
+   cd $qemu_dir
+   git checkout $qemubranch
 
-  cd $qemu_dir
+  cd $builddir/$qemu_dir
   [[ -d $qemupatch ]] && git apply $qemupatch/*
 
 #  ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
@@ -81,7 +85,7 @@ echo "dir: $PWD"
 function build_qemu() {
   echo "make qemu"
 #  [[ -z "$(ls -A $builddir/$qemu_dir)" ]] && echo "${red}Can't find qemu source..${NC}"; return
-  echo "make 2 qemu"
+  echo "make 2 qemu cd $builddir/$qemu_dir"
 
   cd $builddir/$qemu_dir
   ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
@@ -136,10 +140,10 @@ function build_kernel() {
 ##############################################
 function build_sources() {
 echo "in build_srouces builddir: $builddir, $kdir"
-  if [[ -z "$(ls -A $builddir/$kdir)" ]]; then
-    echo "${red}Can't find kernel source..${NC}"
-     return
-  fi
+#  if [[ -z "$(ls -A $builddir/$kdir)" ]]; then
+#    echo "${red}Can't find kernel source..${NC}"
+#     return
+#  fi
 echo "docker calling"
   docker=$( dpkg -l | grep -w " docker " )
   [[ -z "$docker" ]] && source $cdir/scripts/install-docker.sh
