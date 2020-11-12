@@ -45,8 +45,6 @@ echo -en '\n'
 read -p "Press <Enter> key to continue"
 }
 
-
-
 ##############################################
 # qemu source and build 
 qemu_source=https://git.qemu.org/git/qemu.git
@@ -57,11 +55,12 @@ qemupatch="$patchdir/$qemu_dir"
 
 function download_qemu() {
 
-echo "dir: $PWD"
+#echo "dir: $PWD"
   cd "$builddir"
 
-  run_as_root "apt-get install -y pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev  libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison make libiscsi-dev librbd-dev libaio-dev"
-  [[ ! -z "$builddir/$qemu_dir" ]] && find $builddir/$qemu_dir -type d -name "$qemu_dir" -exec sudo rm -rf {} +
+  install_pkgs "pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev  libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison make libiscsi-dev librbd-dev libaio-dev gettext"
+
+  [[ ! -z "$builddir/$qemu_dir" ]] && find $builddir/$qemu_dir -type d -name "$qemu_dir" -exec rm -rf {} +
 #  find $patchdir -type d -name "$qemu_dir" -exec rm -rf {} +
 
   # pull tree
@@ -73,10 +72,11 @@ echo "dir: $PWD"
   cd $builddir/$qemu_dir
   [[ -d $qemupatch ]] && git apply $qemupatch/*
 
-#  ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
-#    --enable-debug --enable-sdl --enable-vhost-net --enable-spice --disable-debug-tcg \
-#    --enable-opengl --enable-gtk --enable-virtfs --target-list=x86_64-softmmu \
-#    --audio-drv-list=pa
+  ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
+    --enable-debug --enable-sdl --enable-vhost-net --enable-spice --disable-debug-tcg \
+    --enable-opengl --enable-gtk --enable-virtfs --target-list=x86_64-softmmu \
+    --audio-drv-list=pa
+  make -j `nproc`
 }
 
 #---------------------------------------------
@@ -88,11 +88,11 @@ function build_qemu() {
   echo "make 2 qemu cd $builddir/$qemu_dir"
 
   cd $builddir/$qemu_dir
-  ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
-    --enable-debug --enable-sdl --enable-vhost-net --enable-spice --disable-debug-tcg \
-    --enable-opengl --enable-gtk --enable-virtfs --target-list=x86_64-softmmu \
-    --audio-drv-list=pa
-  make -j `nproc`
+#  ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
+#    --enable-debug --enable-sdl --enable-vhost-net --enable-spice --disable-debug-tcg \
+#    --enable-opengl --enable-gtk --enable-virtfs --target-list=x86_64-softmmu \
+#    --audio-drv-list=pa
+#  make -j `nproc`
 }
 
 
@@ -114,14 +114,14 @@ function download_kernel() {
   fi
 
   cd $kdir
-  echo "kdir: $PWD, git apply $kernelpatch/* #2&>/dev/null"
+#  echo "kdir: $PWD, git apply $kernelpatch/* #2&>/dev/null"
   git apply $kernelpatch/* #2&>/dev/null
 #  git apply --directory=$build/$kdir $patchdir/$kernelpatch/* #2&>/dev/null
 
 
 # Fetch kernel config to .config and apply it using make oldconfig
   local kernel_config_url="https://kernel.ubuntu.com/~kernel-ppa/config/focal/linux/5.4.0-44.48/amd64-config.flavour.generic"
-  echo "fetching kernel config from $kernel_config_url"
+#  echo "fetching kernel config from $kernel_config_url"
   /usr/bin/wget -q -O ./.config $kernel_config_url
 
   echo "${green}--- Appling kernel config ...${NC}"
@@ -148,12 +148,14 @@ echo "docker calling"
   docker=$( dpkg -l | grep -w " docker " )
   [[ -z "$docker" ]] && source $cdir/scripts/install-docker.sh
 
-echo "cdir: $cdir"
+echo "=============================cdir: $cdir"
   # run docker as user to build kernel
 #  run_as_root "docker run --rm -v $cdir:/build 
   run_as_root "docker run --rm --net=host -v $cdir:$cdir \
         -u $(id -u ${USER}):$(id -g ${USER}) \
        --name bob mydocker/bob_the_builder  bash -c \"cd $cdir/docker; ./build-sources.sh\""
 #       --name bob mydocker/bob_the_builder"
+
+#  build_qemu
 }
 

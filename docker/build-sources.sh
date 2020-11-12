@@ -22,8 +22,8 @@ source $idv_config_file
 #source ./scripts/build-kernel-docker.sh
 echo "build_source ************************************"
 source ./scripts/source-manager.sh
-#build_kernel
-build_qemu
+build_kernel
+#build_qemu
 
 exit 0
 

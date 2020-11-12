@@ -28,10 +28,12 @@ source $idv_config_file
 # Prepare the build environment
 #-------------------------------------
 function prep_build() {
-  dialog=$( dpkg -l | grep -w " dialog " )
-  [[ -z $dialog ]] && run_as_root "apt-get install dialog"
-  acl=$( dpkg -l | grep -w " acl " )
-  [[ -z $acl ]] && run_as_root "apt-get install acl"
+  install_pkgs "dialog acl"
+
+#  dialog=$( dpkg -l | grep -w " dialog " )
+#  [[ -z $dialog ]] && run_as_root "apt-get install dialog"
+#  acl=$( dpkg -l | grep -w " acl " )
+#  [[ -z $acl ]] && run_as_root "apt-get install acl"
 
 #  docker=$( dpkg -l | grep -w " docker " )
 #  [[ -z $docker ]] && source $cdir/scripts/install-docker.sh
@@ -42,20 +44,7 @@ function prep_build() {
 #-------------------------------------
 # Build source code using docker
 #-------------------------------------
-function build_kernel_deleteme() {
-
-  docker=$( dpkg -l | grep -w " docker " )
-  [[ -z $docker ]] && source $cdir/scripts/install-docker.sh
-
-  # run docker as user to build kernel
-#  run_as_root "docker run --rm -v $cdir:/build \
-  run_as_root "docker run --rm -v $cdir:$cdir \
-        -u $(id -u ${USER}):$(id -g ${USER}) \
-       --name bob mydocker/bob_the_builder  bash -c \"cd $cdir/docker; ./build-docker.sh\""
-#       --name bob mydocker/bob_the_builder"
-}
-
-function install_kernel() {
+function install_kernel_deleteme() {
   debs=$( ls $cdir/*.deb )
   echo "${yellow}$debs${NC}"
 
@@ -83,7 +72,7 @@ source $cdir/scripts/source-manager.sh
 display_settings
 
 # get kernel source
-#download_kernel
+download_kernel
 
 # get qemu source
 download_qemu
