@@ -27,6 +27,8 @@ kdir="kernel"
 builddir="$cdir/build"
 patchdir="$cdir/build/patches"
 
+QEMU_REL=qemu-4.2.0
+
 #===============================================
 # Fixed Kernel repo supported by IDV solution
 #===============================================

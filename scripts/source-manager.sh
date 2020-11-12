@@ -1,13 +1,12 @@
 #!/bin/bash
 
 source ./scripts/util.sh
-#source ./idv-common
 
-version="0.7"
+#version="0.7"
 echo "${green}Current working directory : $cdir${NC}"
-kdir="kernel"
-krevision="3.0"
-kversion="intelgvt"
+##kdir="kernel"
+#krevision="3.0"
+#kversion="intelgvt"
 
 
 
@@ -15,34 +14,33 @@ kversion="intelgvt"
 # Output current status
 #================================================
 function display_settings() {
-echo -en '\n'
-echo "================================================="
-echo "idv version:  ${green}$version${NC}"
-echo "repo:         ${green}$repo${NC}"
-echo "branch:       ${green}$branch${NC}"
+  echo -en '\n'
+  echo "================================================="
+  echo "idv version:  ${green}$version${NC}"
+  echo "repo:         ${green}$repo${NC}"
+  echo "branch:       ${green}$branch${NC}"
 
 
-if [ -d "${patches%.tar.gz}" ]; then
-  # if patches directory exists
-  echo "${green} -- patching from a ${patches%.tar.gz} directory ...${NC}"
-  echo "patches:      ${green}${patches%.tar.gz} directory${NC}"
-elif [ ! -z "$patches" ]; then
-  # if .tar.gz file exists
-  echo "${green} -- patching from $patches ...${NC}"
-  echo "patches:      ${green}$patches${NC}"
+  if [ -d "${patches%.tar.gz}" ]; then
+    # if patches directory exists
+    echo "${green} -- patching from a ${patches%.tar.gz} directory ...${NC}"
+    echo "patches:      ${green}${patches%.tar.gz} directory${NC}"
+  elif [ ! -z "$patches" ]; then
+    # if .tar.gz file exists
+    echo "${green} -- patching from $patches ...${NC}"
+    echo "patches:      ${green}$patches${NC}"
+  else
+    echo "patches:      ${yellow}No patches are applied ...${NC}"
+  fi
 
-else
-  echo "patches:      ${yellow}No patches are applied ...${NC}"
-fi
+  echo "kernel dir:   ${green}$kdir${NC}"
+  echo "Kernel ver:   ${green}$kversion${NC}"
+  echo "Kernel rev:   ${green}$krevision${NC}"
+  echo -e "current dir:  ${blink}$cdir${NC}"
+  echo "=================================================\n"
+  echo -en '\n'
 
-echo "kernel dir:   ${green}$kdir${NC}"
-echo "Kernel ver:   ${green}$kversion${NC}"
-echo "Kernel rev:   ${green}$krevision${NC}"
-echo -e "current dir:  ${blink}$cdir${NC}"
-echo "=================================================\n"
-echo -en '\n'
-
-read -p "Press <Enter> key to continue"
+  read -p "Press <Enter> key to continue"
 }
 
 ##############################################
@@ -61,21 +59,37 @@ function download_qemu() {
   install_pkgs "pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev  libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison make libiscsi-dev librbd-dev libaio-dev gettext"
 
   [[ ! -z "$builddir/$qemu_dir" ]] && find $builddir/$qemu_dir -type d -name "$qemu_dir" -exec rm -rf {} +
+  [[ ! -z "$qemupatch" ]] && find $qemupatch -type d -name "$qemu_dir" -exec rm -rf {} +
 #  find $patchdir -type d -name "$qemu_dir" -exec rm -rf {} +
 
   # pull tree
 #  git clone --depth 1 $qemu_source --branch $qemubranch --single-branch $qemu_dir
-   git clone $qemu_source
-   cd $qemu_dir
-   git checkout $qemubranch
-
+  wget https://download.qemu.org/$QEMU_REL.tar.xz -P $builddir/$qemu_dir
   cd $builddir/$qemu_dir
-  [[ -d $qemupatch ]] && git apply $qemupatch/*
+  tar -xf $QEMU_REL.tar.xz
+  cd $QEMU_REL
+
+  wget -q https://raw.githubusercontent.com/projectceladon/vendor-intel-utils/master/host/qemu/0001-Revert-Revert-vfio-pci-quirks.c-Disable-stolen-memor.patch	-P $qemupatch
+	wget -q https://raw.githubusercontent.com/projectceladon/vendor-intel-utils/master/host/qemu/Disable-EDID-auto-generation-in-QEMU.patch -P $qemupatch
+#	wget -q https://raw.githubusercontent.com/projectceladon/vendor-intel-utils/master/host/ovmf/OvmfPkg-add-IgdAssgingmentDxe-for-qemu-4_2_0.patch -P $qemupatch
+  
+#   git clone $qemu_source
+#   cd $qemu_dir
+#   git checkout $qemubranch
+
+#  cd $builddir/$qemu_dir
+  patchfiles=$( ls -A $qemupatch 2>/dev/null )
+  if [[ $? -eq 0 ]]; then
+    for i in ${patchfiles[@]}; do
+       patch -p1 < $qemupatch/$i
+    done
+  fi
 
   ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
     --enable-debug --enable-sdl --enable-vhost-net --enable-spice --disable-debug-tcg \
     --enable-opengl --enable-gtk --enable-virtfs --target-list=x86_64-softmmu \
     --audio-drv-list=pa
+
   make -j `nproc`
 }
 
