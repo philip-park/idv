@@ -44,6 +44,21 @@ qemu_dir=qemu
 qemupatch="$patchdir/$qemu_dir"
 ##############################################
 
+function ubu_build_ovmf(){
+  install_pkgs "uuid-dev nasm acpidump iasl"
+
+  cd $builddir/$qemu_dir/$QEMU_REL/roms/edk2
+#  cd $CIV_WORK_DIR/$QEMU_REL/roms/edk2
+####  patch -p4 < $builddir/civ/patches/ovmf/OvmfPkg-add-IgdAssgingmentDxe-for-qemu-4_2_0.patch
+  source ./edksetup.sh
+  make -C BaseTools/
+  build -b DEBUG -t GCC5 -a X64 -p OvmfPkg/OvmfPkgX64.dsc -D NETWORK_IP4_ENABLE -D NETWORK_ENABLE  -D SECURE_BOOT_ENABLE -DTPM2_ENABLE=TRUE
+  cp Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd ../../../OVMF.fd
+  cd -
+}
+
+
+
 function download_qemu() {
 #echo "dir: $PWD"
   cd "$builddir"
@@ -144,18 +159,11 @@ function build_kernel() {
 # build all sources using docker
 ##############################################
 function build_sources() {
-echo "in build_srouces builddir: $builddir, $kdir, $cdir"
-#  if [[ -z "$(ls -A $builddir/$kdir)" ]]; then
-#    echo "${red}Can't find kernel source..${NC}"
-#     return
-#  fi
-echo "install docker calling"
+  echo "in build_srouces builddir: $builddir, $kdir, $cdir"
 
-  if ! dpkg -s "docker-ce" >/dev/null 2>&1; then
-    source $cdir/scripts/install-docker.sh
-  fi
+  source $cdir/scripts/install-docker.sh
 
-echo "return from install docker: $cdir"
+  echo "return from install docker: $cdir"
   # run docker as user to build kernel
 #  run_as_root "docker run --rm -v $cdir:/build 
   run_as_root "docker run --rm --net=host -v $cdir:$cdir \
@@ -163,19 +171,18 @@ echo "return from install docker: $cdir"
        --name bob mydocker/bob_the_builder  bash -c \"cd $cdir/docker; ./build-sources.sh\""
 #       --name bob mydocker/bob_the_builder"
 
-#  build_qemu
 }
 
 
 ##############################################
 # build CIV
 ##############################################
-function ubu_build_ovmf(){
+function ubu_build_ovmf_deleteme(){
 #  install_pkgs "uuid-dev nasm acpidump iasl"
 
   cd $builddir/$qemu_dir/$QEMU_REL/roms/edk2
 #  cd $CIV_WORK_DIR/$QEMU_REL/roms/edk2
-  patch -p4 < $builddir/civ/patches/ovmf/OvmfPkg-add-IgdAssgingmentDxe-for-qemu-4_2_0.patch
+####  patch -p4 < $builddir/civ/patches/ovmf/OvmfPkg-add-IgdAssgingmentDxe-for-qemu-4_2_0.patch
   source ./edksetup.sh
   make -C BaseTools/
   build -b DEBUG -t GCC5 -a X64 -p OvmfPkg/OvmfPkgX64.dsc -D NETWORK_IP4_ENABLE -D NETWORK_ENABLE  -D SECURE_BOOT_ENABLE -DTPM2_ENABLE=TRUE

@@ -18,7 +18,7 @@ echo "build_source ************************************"
 source ./scripts/source-manager.sh
 build_kernel
 
-#ubu_build_ovmf
+ubu_build_ovmf
 #build_qemu
 
 exit 0
