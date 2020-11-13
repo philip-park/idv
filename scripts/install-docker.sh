@@ -1,5 +1,6 @@
-#!/bin/bash 
-source ./scripts/util.sh
+#!/bin/bash
+
+#source ./scripts/util.sh
 
 function install_docker() {
   if ! dpkg -s docker-ce >/dev/null 2>&1; then
@@ -41,4 +42,4 @@ function build_docker() {
 
 install_docker
 build_docker
-
+echo "cdir from install docker: $cdir"

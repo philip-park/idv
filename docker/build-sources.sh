@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export env TERM=xterm-256color
-cd ..
+cd .. 
 source ./scripts/util.sh
 
 ###################################################################
@@ -12,17 +12,13 @@ source ./scripts/util.sh
 # branch  : tag or branch of the kernel source
 # patches : idv patch file name with our ".tar.gz" extention
 ###################################################################
-#version="0.7"
 echo "${green}Current working directory : $cdir${NC}"
-#kdir="kernel"
-#krevision="3.0"
-#kversion="intelgvt"
 
-source $idv_config_file
-#source ./scripts/build-kernel-docker.sh
 echo "build_source ************************************"
 source ./scripts/source-manager.sh
 build_kernel
+
+#ubu_build_ovmf
 #build_qemu
 
 exit 0

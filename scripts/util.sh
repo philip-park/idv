@@ -15,17 +15,20 @@ NC=`tput sgr0`
 #=================================
 # global variable shared among scripts
 #=================================
+cdir=$(pwd)
+
 version="0.8"
 krevision="3.0"
 kversion="intelgvt"
 
-cdir=$(pwd)
 vmroot=/var
 #vmroot=$cdir
 vmdir="$vmroot/vm"
 kdir="kernel"
 builddir="$cdir/build"
 patchdir="$cdir/build/patches"
+
+QEMU_REL=qemu-4.2.0
 
 #===============================================
 # Fixed Kernel repo supported by IDV solution
@@ -36,6 +39,7 @@ kernel_repo+=("IOTG-repo" "https://github.com/intel/linux-intel-lts.git" off "lt
 
 default_config=./scripts/idv-config-default
 idv_config_file="$cdir/.idv-config"
+echo "idv_config_file: $idv_config_file"
 [[ -f "$idv_config_file" ]] && default_config=$idv_config_file || touch $idv_config_file
 
 function update_idv_config() {

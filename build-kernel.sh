@@ -37,7 +37,6 @@ function prep_build() {
 
 #  docker=$( dpkg -l | grep -w " docker " )
 #  [[ -z $docker ]] && source $cdir/scripts/install-docker.sh
-
   [[ -z "$repo" || -z "$branch" ]] && source $cdir/scripts/config-kernel.sh
 }
 
@@ -63,7 +62,6 @@ function sriov_system() {
 }
 
 prep_build
-#source ./idv-common
 #pmc=$(cat /sys/devices/cpu/caps/pmu_name)
 #[[ $pmc == "icelake" ]] && sriov_system || build_kernel
 source $cdir/scripts/source-manager.sh
@@ -76,7 +74,7 @@ download_kernel
 
 # get qemu source
 download_qemu
-echo "cdir: $cdir"
+
 # build kernel/qemu
 build_sources
 
