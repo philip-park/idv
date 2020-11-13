@@ -1,8 +1,8 @@
 #!/bin/bash
 
 source ./scripts/util.sh
-
 echo "${green}Current working directory : $cdir${NC}"
+
 #================================================
 # Output current status
 #================================================
