@@ -60,7 +60,6 @@ function ubu_build_ovmf(){
 
 
 function download_qemu() {
-#echo "dir: $PWD"
   cd "$builddir"
 
   install_pkgs "pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev  libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison make libiscsi-dev librbd-dev libaio-dev gettext"
@@ -98,6 +97,7 @@ function download_qemu() {
     --audio-drv-list=pa
 
   make -j `nproc`
+  cd $cdir
 }
 
 #---------------------------------------------
