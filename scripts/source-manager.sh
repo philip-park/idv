@@ -45,7 +45,8 @@ qemupatch="$patchdir/$qemu_dir"
 ##############################################
 
 function ubu_build_ovmf(){
-  install_pkgs "uuid-dev nasm acpidump iasl"
+  # this routine runs in docker
+#  install_pkgs "uuid-dev nasm acpidump iasl"
 
   cd $builddir/$qemu_dir/$QEMU_REL/roms/edk2
 #  cd $CIV_WORK_DIR/$QEMU_REL/roms/edk2
@@ -53,7 +54,7 @@ function ubu_build_ovmf(){
   source ./edksetup.sh
   make -C BaseTools/
   build -b DEBUG -t GCC5 -a X64 -p OvmfPkg/OvmfPkgX64.dsc -D NETWORK_IP4_ENABLE -D NETWORK_ENABLE  -D SECURE_BOOT_ENABLE -DTPM2_ENABLE=TRUE
-  cp Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd ../../../OVMF.fd
+  cp Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd $builddir # ../../../OVMF.fd
   cd -
 }
 
