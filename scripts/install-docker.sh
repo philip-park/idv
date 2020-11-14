@@ -1,7 +1,5 @@
 #!/bin/bash
-echo "cdir: $cdir"
-source ./scripts/util.sh
-ls ./scripts/*
+#source ./scripts/util.sh
 
 function install_docker() {
   if ! dpkg -s docker-ce >/dev/null 2>&1; then
@@ -36,10 +34,8 @@ function install_docker_deleteme() {
 }
 
 function build_docker() {
-echo "docker build, cdir: $cdir"
   if [[ -z $(docker images -q mydocker/bob_the_builder 2> /dev/null) ]]; then
-    echo "in docker build"
-    ls ./docker
+#    echo "in docker build cdir: $cdir, pwd: $(pwd)"
     cd ./docker; run_as_root "docker build . -t mydocker/bob_the_builder"
   fi
 }

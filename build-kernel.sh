@@ -69,14 +69,14 @@ source $cdir/scripts/source-manager.sh
 # display current settings before move on
 display_settings
 
+[[ $1 != "--nodown" ]] && download_kernel && download_qemu
+
 # get kernel source
-download_kernel
+#download_kernel
 
 # get qemu source
-download_qemu
+#download_qemu
 
 # build kernel/qemu
 build_sources
-
-#install_kernel
 

@@ -22,6 +22,6 @@ RUN apt-get update \
 	uuid-dev xfslibs-dev libjpeg-dev libpmem-dev \
 	gcc-s390x-linux-gnu gcc-alpha-linux-gnu net-tools \
 	libc6.1-dev-alpha-cross gcc-powerpc64-linux-gnu rsync libelf-dev\
-  uuid-dev nasm acpidump iasl \
+  uuid-dev nasm acpidump iasl mtools dosfstools \
  && apt-get clean
 #ENTRYPOINT ["/bin/bash", "-c", "cd /build/docker; ./build-docker.sh"]

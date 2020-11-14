@@ -8,7 +8,7 @@ tempfile="./temp"
 grub_modified=0
 
 function grub_setup() {
-  opts=(i915.enable_gvt=1 kvm.ignore_msrs=1 intel_iommu=on,igfx_off drm.debug=0 consoleblank=0)
+  opts=(i915.enable_gvt=1 kvm.ignore_msrs=1 intel_iommu=on,igfx_off drm.debug=0 consoleblank=0 i915.force=probe=*)
 
   cp -f $grubfile $tempfile
 
