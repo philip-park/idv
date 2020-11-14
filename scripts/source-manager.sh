@@ -45,9 +45,7 @@ qemupatch="$patchdir/$qemu_dir"
 ##############################################
 
 function ubu_build_ovmf(){
-  # this routine runs in docker
-#  install_pkgs "uuid-dev nasm acpidump iasl"
-
+  # ran in docker
   cd $builddir/$qemu_dir/$QEMU_REL/roms/edk2
 #  cd $CIV_WORK_DIR/$QEMU_REL/roms/edk2
 ####  patch -p4 < $builddir/civ/patches/ovmf/OvmfPkg-add-IgdAssgingmentDxe-for-qemu-4_2_0.patch
@@ -57,8 +55,6 @@ function ubu_build_ovmf(){
   cp Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd $builddir # ../../../OVMF.fd
   cd -
 }
-
-
 
 function download_qemu() {
   cd "$builddir"
@@ -74,23 +70,30 @@ function download_qemu() {
   wget https://download.qemu.org/$QEMU_REL.tar.xz -P $builddir/$qemu_dir
   cd $builddir/$qemu_dir
   tar -xf $QEMU_REL.tar.xz
-  cd $QEMU_REL
 
   wget -q https://raw.githubusercontent.com/projectceladon/vendor-intel-utils/master/host/qemu/0001-Revert-Revert-vfio-pci-quirks.c-Disable-stolen-memor.patch	-P $qemupatch
 	wget -q https://raw.githubusercontent.com/projectceladon/vendor-intel-utils/master/host/qemu/Disable-EDID-auto-generation-in-QEMU.patch -P $qemupatch
 #	wget -q https://raw.githubusercontent.com/projectceladon/vendor-intel-utils/master/host/ovmf/OvmfPkg-add-IgdAssgingmentDxe-for-qemu-4_2_0.patch -P $qemupatch
   
-#   git clone $qemu_source
-#   cd $qemu_dir
-#   git checkout $qemubranch
-
-#  cd $builddir/$qemu_dir
+  cd $QEMU_REL
   patchfiles=$( ls -A $qemupatch 2>/dev/null )
   if [[ $? -eq 0 ]]; then
     for i in ${patchfiles[@]}; do
        patch -p1 < $qemupatch/$i
     done
   fi
+
+  cd $cdir
+}
+
+#---------------------------------------------
+# build qemu
+#---------------------------------------------
+function build_qemu() {
+#  [[ -z "$(ls -A $builddir/$qemu_dir)" ]] && echo "${red}Can't find qemu source..${NC}"; return
+  echo "make 2 qemu cd $builddir/$qemu_dir"
+
+  cd $builddir/$qemu_dir/$QEMU_REL
 
   ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
     --enable-debug --enable-sdl --enable-vhost-net --enable-spice --disable-debug-tcg \
@@ -99,22 +102,6 @@ function download_qemu() {
 
   make -j `nproc`
   cd $cdir
-}
-
-#---------------------------------------------
-# build qemu
-#---------------------------------------------
-function build_qemu_archive() {
-  echo "make qemu"
-#  [[ -z "$(ls -A $builddir/$qemu_dir)" ]] && echo "${red}Can't find qemu source..${NC}"; return
-  echo "make 2 qemu cd $builddir/$qemu_dir"
-
-  cd $builddir/$qemu_dir
-#  ./configure --prefix=/usr --enable-kvm --disable-xen --enable-libusb --enable-debug-info \
-#    --enable-debug --enable-sdl --enable-vhost-net --enable-spice --disable-debug-tcg \
-#    --enable-opengl --enable-gtk --enable-virtfs --target-list=x86_64-softmmu \
-#    --audio-drv-list=pa
-#  make -j `nproc`
 }
 
 kernelpatch="${patches%.tar.gz}"
@@ -162,6 +149,8 @@ function build_kernel() {
 function build_sources() {
   echo "in build_srouces builddir: $builddir, $kdir, $cdir"
 
+  build_qemu
+
   source $cdir/scripts/install-docker.sh
 
   echo "return from install docker: $cdir"
@@ -178,19 +167,6 @@ function build_sources() {
 ##############################################
 # build CIV
 ##############################################
-function ubu_build_ovmf_deleteme(){
-#  install_pkgs "uuid-dev nasm acpidump iasl"
-
-  cd $builddir/$qemu_dir/$QEMU_REL/roms/edk2
-#  cd $CIV_WORK_DIR/$QEMU_REL/roms/edk2
-####  patch -p4 < $builddir/civ/patches/ovmf/OvmfPkg-add-IgdAssgingmentDxe-for-qemu-4_2_0.patch
-  source ./edksetup.sh
-  make -C BaseTools/
-  build -b DEBUG -t GCC5 -a X64 -p OvmfPkg/OvmfPkgX64.dsc -D NETWORK_IP4_ENABLE -D NETWORK_ENABLE  -D SECURE_BOOT_ENABLE -DTPM2_ENABLE=TRUE
-  cp Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd ../../../OVMF.fd
-  cd -
-}
-
 function civ_build() {
   ( mkdir -p $builddir/civ )
   wget https://github.com/projectceladon/celadon-binary/raw/master/CIV_00.20.02.24_A10/caas-ota-QMm000000.zip -P $builddir/civ
