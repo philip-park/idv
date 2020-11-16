@@ -69,6 +69,8 @@ source $cdir/scripts/source-manager.sh
 # display current settings before move on
 display_settings
 
+# download kernel and qemu and apply patch
+# skip if --nodown specified
 [[ $1 != "--nodown" ]] && download_kernel && download_qemu
 
 # get kernel source
