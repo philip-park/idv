@@ -56,7 +56,7 @@ echo "cmd: ($EUID) $cmd"
   if [[ $EUID -eq 0 ]];then
     ($cmd)
   else
-    sudo -s <<EOF
+    sudo -s -E <<EOF
     ($cmd)
 EOF
    fi
