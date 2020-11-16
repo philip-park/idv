@@ -3,13 +3,13 @@
 source ./scripts/util.sh
 
 function install_kernel() {
-  debs=$( ls -R $cdir/*.deb 2>/dev/null )
+  debs=$( ls -R $cdir/build/*.deb 2>/dev/null )
   echo "${yellow}$debs${NC}"
 
   [[ -z "$debs" ]] && echo -e "${red}✖${NC} Can't find *.deb file" && exit 1
 
   source $cdir/scripts/config-modules.sh
-  run_as_root "dpkg -i *.deb"
+  run_as_root "dpkg -i build/*.deb"
   source ./grub-setup.sh
 
   echo "reboot in 5 seconds. Control + C to abort.."
