@@ -117,12 +117,11 @@ function download_kernel() {
   git clone --depth 1 $repo --branch $branch --single-branch $kdir
 
   # 3) apply patches if exists
-  if [[ ! -d "$patchdir/$kernelpatch" && -f "$patchdir/$patches" ]]; then
-    tar -C $patchdir -xzvf $patchdir/$patches
+  if [[ ! -d "$kernelpatch" && -f "$patches" ]]; then
+    tar -C $patchdir -xzvf $patches
   fi
 
   cd $kdir
-#  echo "kdir: $PWD, git apply $kernelpatch/* #2&>/dev/null"
   git apply $kernelpatch/* #2&>/dev/null
 #  git apply --directory=$build/$kdir $patchdir/$kernelpatch/* #2&>/dev/null
 
