@@ -1,5 +1,6 @@
 #!/bin/bash
-#source ./scripts/util.sh
+echo "install-docker: cdir: $cdir, pwd: $(pwd)"
+source ./scripts/util.sh
 
 function install_docker() {
   if ! dpkg -s docker-ce >/dev/null 2>&1; then
