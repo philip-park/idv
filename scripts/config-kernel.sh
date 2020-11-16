@@ -21,27 +21,26 @@ function set_default_url() {
 
 #================================================================
 # Vanilla build needs patches, find patches from current directory
-# case 1) $patch_file=0 and $patches=0 ====> use No Patches
-# case 2) $patch file=1 and $patches=0 ====> use $patch_file
-# case 3) $patch_file=1 and $patches=1 ====> use matching pair, no match, then No Patches
 #================================================================
 function get_patch_file() {
 #---------------------------------
   # build the options for dialogget list of patch files in currect directory
 #-------------------------------
 
-  files=$( ls $patchdir/*.tar.gz )
+  files=($( ls $patchdir/*.tar.gz 2> /dev/null ))
 
   local -a list=()
-  # case 1, no patch found
-  [[ $patch_file == '*.tar.gz' ]] && list+=(0 "No Patches" on) || list+=(0 "No Patches" off)
-  idx=1
+  # Give option to select no patches
+#  list+=(0 "No Patches" on) || list+=(0 "No Patches" off)
+  idx=0
   for patch_file in "${files[@]}"; do
     echo "loop: $patch_file"
+    list+=($idx "${files[$idx]}" off)
+
     # case 2, only one patch file found
-    [[ ${#files[@]} -eq 1 ]] && list+=($idx "$patch_file" on) && break 
+#    [[ ${#files[@]} -eq 1 ]] && list+=($idx "$patch_file" on) && break 
     # case 3, file name matches existing setting in $patches
-    [[ $patch_file == $patches ]] && list+=($idx "$patch_file" on) || list+=($idx "$patch_file" off)
+#    [[ $patch_file == $patches ]] && list+=($idx "$patch_file" on) || list+=($idx "$patch_file" off)
     idx=$((idx+1))
   done
 echo "get_patch_file"
@@ -54,7 +53,7 @@ Will ask for <patch>.tar.gz file upon exit."  20 80 10 \
             3>&1 1>&2 2>&3 )
 
   [[ $? -ne 0 ]] && retStatus="Cancel" && return
-  [[ -z $option_patch || $option_patch -eq "0" ]] && patches="" || patches=${list[$((option_patch*3+1))]}
+  [[ -z $option_patch ]] && patches="" || patches=${list[$((option_patch*3+1))]}
 
 #  echo "results from patch file: $?"
   (grep -qF "patches=" $idv_config_file) \
