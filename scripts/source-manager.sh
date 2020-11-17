@@ -76,9 +76,10 @@ function download_qemu() {
 #	wget -q https://raw.githubusercontent.com/projectceladon/vendor-intel-utils/master/host/ovmf/OvmfPkg-add-IgdAssgingmentDxe-for-qemu-4_2_0.patch -P $qemupatch
   
   cd $QEMU_REL
-  patchfiles=$( ls -A $qemupatch 2>/dev/null )
+  patchfiles=($( ls -A $qemupatch 2>/dev/null ))
   if [[ $? -eq 0 ]]; then
     for i in ${patchfiles[@]}; do
+      echo "applying patch to qemu: $qemupatch/$i"
        patch -p1 < $qemupatch/$i
     done
   fi
@@ -116,30 +117,37 @@ function download_kernel() {
   # 2) check fresh copy of the kernel from a repo
   git clone --depth 1 $repo --branch $branch --single-branch $kdir
 
-  # 3) apply patches if exists
+  # 3) unpack patches if exists
   if [[ ! -d "$kernelpatch" && -f "$patches" ]]; then
+    echo "unpacking kernel patch file: $kernelpatch"
     tar -C $patchdir -xzvf $patches
   fi
-
   cd $kdir
   git apply $kernelpatch/* #2&>/dev/null
+
 #  git apply --directory=$build/$kdir $patchdir/$kernelpatch/* #2&>/dev/null
 
 
 # Fetch kernel config to .config and apply it using make oldconfig
   local kernel_config_url="https://kernel.ubuntu.com/~kernel-ppa/config/focal/linux/5.4.0-44.48/amd64-config.flavour.generic"
 #  echo "fetching kernel config from $kernel_config_url"
+  echo "Kernel directory: $kdir, pwd=$(pwd)"
   /usr/bin/wget -q -O ./.config $kernel_config_url
 
-  echo "${green}--- Appling kernel config ...${NC}"
-  ( yes "" | make oldconfig )
+#  echo "${green}--- Appling kernel config ...${NC}"
+#  ( yes "" | make oldconfig )
 }
 
 #---------------------------------------------
 # Build kernel
 #---------------------------------------------
 function build_kernel() {
-  ( cd build/$kdir && CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers )
+  cd $builddir/$kdir 
+  echo "build kernel: cdir: $cdir, pwd: $(pwd)"
+  echo "${green}--- Appling kernel config ...${NC}"
+  yes "" | make oldconfig 
+  echo "building kernel"
+  CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers 
 }
 
 ##############################################
