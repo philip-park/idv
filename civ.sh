@@ -117,6 +117,7 @@ function start_android() {
   cd $builddir/civ
   sudo -E ./scripts/start_android_qcow2.sh --display-off
 }
+# uncomment all below after testing
 
 #pull_scripts
 #prep_civ
