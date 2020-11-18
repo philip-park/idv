@@ -10,6 +10,7 @@ TEMP_FILE="$cdir/temp_file"
 
 gvt_disp_ports_mask="/sys/class/drm/card0/gvt_disp_ports_mask"
 mdev_dir="/sys/bus/pci/devices/0000:00:02.0/mdev_supported_types"
+gfx_device="/sys/bus/pci/devices/0000:00:02.0"
 
 function build_create_vgpu() {
   unset temp
@@ -90,7 +91,6 @@ echo "install qemu: $vgpu"
   $(rm $TEMP_FILE)
 }
 
-gfx_device="/sys/bus/pci/devices/0000:00:02.0"
 function build_start_qemu_batch() {
   vgpu=$1
   low_vgpu="$( echo $vgpu | tr '[:upper:]' '[:lower:]' )"
