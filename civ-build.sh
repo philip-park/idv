@@ -2,7 +2,7 @@
 source ./scripts/util.sh
 
 work_dir=$vmdir
-scripts_dir=$work_diri/civ/scripts
+scripts_dir=$work_dir/civ/scripts
 
 caas_image=$work_dir/disk/android.qcow2
 qmp_log=/tmp/qmp_event.log
@@ -34,6 +34,7 @@ function network_setup(){
 
 function setup_vgpu(){
 return
+# already taken care of by IDV
 
 	res=0
 	if [ ! -d $GVTg_DEV_PATH/$GVTg_VGPU_UUID ]; then
@@ -45,6 +46,7 @@ return
 }
 
 function setup_gvtd(){
+# IDV is not supporting gvtd at this point
 return
 
 	res=0
@@ -60,11 +62,13 @@ return
 	return $res
 }
 
+
+#Not sure whether IDV need this, TBD
 function create_snd_dummy(){
 	modprobe snd-dummy
 }
 
-# Defaults to display-off
+# Defaults to display-off for now
 if [[ $1 != "--display-off" ]]
 then
         display_type="none"
