@@ -7,7 +7,7 @@ install_dir=/var/vm/civ
 CIV_INSTALL_FOLDER=/var/vm/civ
 CIV_SHARE_FOLDER=/var/vm/civ/share_folder
 
-install_pkgs "thermald mtools python3-usb python3-pyudev unzip ovmf pulseaudio jq"
+install_pkgs "thermald dmidecode mtools python3-usb python3-pyudev unzip ovmf pulseaudio jq"
 
 function pull_scripts() {
   cd $builddir/civ
@@ -120,7 +120,9 @@ function start_android() {
 
 
 gfx_device="/sys/bus/pci/devices/0000:00:02.0"
-function start_android(){
+INSTALL_GUEST="$vmdir/scripts/install-guest"
+TEMP_FILE="./temp"
+function build_startup_file(){
   vgpu=$1
   low_vgpu="$( echo $vgpu | tr '[:upper:]' '[:lower:]' )"
 
@@ -167,10 +169,10 @@ function start_android(){
   vgpu_guid=($(grep "^$vgpu" $idv_config_file))
   str+=( "-device vfio-pci-nohotplug,ramfb=off,sysfsdev=$gfx_device/${vgpu_guid#*=},display=off,x-igd-opregion=on" )
 
-  printf "%s\n"  "Creating $INSTALL_GUEST-$low_vgpu.sh file.. "
-  printf "%s\n"  "${str[@]}" > $TEMP_FILE
-  run_as_root "cp $TEMP_FILE $INSTALL_GUEST-$low_vgpu.sh"
-  run_as_root "chmod +x $INSTALL_GUEST-$low_vgpu.sh"
+  printf "Creating $INSTALL_GUEST-$low_vgpu.sh file.. "
+  #printf "%s\n"  "${str[@]}" | run_as_root "tee -a $INSTALL_GUEST-$low_vgpu.sh"
+  printf "%s\n"  "${str[@]}" | tee -a start-android-$low_vgpu.sh
+#  printf "%s\n"  "${str[@]}" > $TEMP_FILE
 }
 
 # uncomment all below after testing
@@ -178,5 +180,10 @@ function start_android(){
 #pull_scripts
 #prep_civ
 #build_android_qcow
-start_android
+
+# to use the CIV released startup file
+#start_android
+
+# to use modified startup build for IDV environment
+build_startup_file VGPU1
 

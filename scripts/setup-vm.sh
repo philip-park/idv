@@ -72,7 +72,7 @@ echo "install qemu: $vgpu"
   str+=( "-k en-us \\" )
   str+=( "-vnc :0 \\" )
 
-  MAC=$( ./scripts/macgen.py )
+  MAC=$( ./scripts/network/macgen.sh )
   str+=( "-net nic,macaddr=$MAC -net tap,script=/home/snuc/idv/scripts/network/qemu-ifup.nat,downscript=no \\")
 
   vgpu_guid=($(grep "^$vgpu" $idv_config_file))
@@ -119,7 +119,7 @@ function build_start_qemu_batch() {
   str+=( "-k en-us \\" )
   str+=( "-vnc :0 \\" )
 
-  MAC=$( ./scripts/macgen.py )
+  MAC=$( ./scripts/network/macgen.sh )
   str+=( "-net nic,macaddr=$MAC -net tap,script=/home/snuc/idv/scripts/network/qemu-ifup.nat,downscript=no \\")
 
   str+=( "-global ICH9-LPC.disable_s3=0 -global ICH9-LPC.disable_s4=1 \\" )

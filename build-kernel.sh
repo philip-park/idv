@@ -28,7 +28,10 @@ source $idv_config_file
 # Prepare the build environment
 #-------------------------------------
 function prep_build() {
-  install_pkgs "dialog acl make build-essential flex bison"
+  install_pkgs "dialog acl make build-essential flex bison bc dmidecode"
+
+  # Install runtime package
+  install_pkgs "dnsmasq bridge-utils"
 
 #  dialog=$( dpkg -l | grep -w " dialog " )
 #  [[ -z $dialog ]] && run_as_root "apt-get install dialog"
