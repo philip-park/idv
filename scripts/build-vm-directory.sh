@@ -19,6 +19,7 @@ function build_vm_directory() {
   run_as_root "mkdir -m a=rwx -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}"
   build_fw_directory
   run_as_root "cp -r ./scripts/network $vmdir/scripts"
+  [[ -f "$builddir/civ/OVMF.fd" ]] && run_as_root "cp -f $builddir/civ/OVMF.fd $vmdir/fw" || echo "Can't copy ./OVMF.fd to $vmdir/fw"
 }
 
 build_vm_directory
