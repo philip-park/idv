@@ -92,7 +92,7 @@ function install_packages_deleteme() {
     run_as_root "apt-get -y install rsync liblz4-tool libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server uuid"
 }
 
-function build_fw_directory() {
+function build_fw_directory_deleteme() {
   run_as_root "apt-get install -y qemu-system-x86"
 
   if [[ -f /usr/share/qemu/bios.bin ]]; then
@@ -105,13 +105,14 @@ function build_fw_directory() {
       || echo "Error: can't find /usr/share/qemu/OVMF.fd file"
 }
 
-function build_vm_directory() {
+function build_vm_directory_deleteme() {
   if [[ $EUID -eq 0 ]];then
     mkdir -m a=rwx -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}
   else
     run_as_root "mkdir -m a=rwx -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}"
   fi
   build_fw_directory
+  run_as_root "cp -r ./scripts/network $vmdir/scripts/"
 }
 
 

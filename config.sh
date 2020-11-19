@@ -31,7 +31,8 @@ function config_main() {
   run_as_root "apt -y install uuid"
 
   # install qemu-system-x86 and copy firmware to /var/vm/fw
-  build_vm_directory
+#  build_vm_directory
+  source ./scripts/build-vm-directory.sh
 
   run_as_root "apt -y install dialog"  # make sure dialog is installed
   source $cdir/scripts/config-vgpu.sh  # get vgpu, gfx port, and port mask info
@@ -85,5 +86,5 @@ function config_main() {
 
   rm -f $tempfile
 }
-run_as_root "apt install bridge-utils dnsmasq"
+install_pkgs "bridge-utils"
 config_main
