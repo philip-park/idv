@@ -39,7 +39,7 @@ function build_create_vgpu() {
   $(rm $TEMP_FILE)
 }
 
-function build_install_qemu_batch() {
+function build_install_qemu_batch_deleteme() {
   vgpu=$1
   low_vgpu="$( echo $vgpu | tr '[:upper:]' '[:lower:]' )"
   unset str
@@ -91,7 +91,7 @@ echo "install qemu: $vgpu"
 
   $(rm $TEMP_FILE)
 }
-function build_start_qemu_batch() {
+function build_start_qemu_batch_deleteme() {
   vgpu=$1
   low_vgpu="$( echo $vgpu | tr '[:upper:]' '[:lower:]' )"
 
@@ -228,14 +228,11 @@ function create_files() {
   local vgpuinfo=$1
   echo "create_file: temp: $vgpuinfo, $cdir"
 
-#  dialog --yesno "Continue to overwrite $vmdir?" 10 40 
-#  if [[ $? -eq 0 ]]; then
-#  build_install_qemu_batch "$vgpuinfo"
-
   qcow_opt=($(grep "GUEST_QCOW2_$vgpuinfo" $idv_config_file))
 
   if [[ $qcow_opt == *"android"* ]]; then
-    echo "${yellow}Run civ.sh"
+    echo "${yellow}Setting and Building android qcow2 file. Will take some time.${NC}"
+    [[ -f $builddir/civ/android.qcow2 ]] && run_as_root "mv -f $builddir/civ/android.qcow2 ${qcow_opt##*=}"
   else
     echo "building install file"
     build_qemu_batch "install" "$vgpuinfo"

@@ -12,6 +12,7 @@ install_pkgs "thermald dmidecode mtools python3-usb python3-pyudev unzip ovmf pu
 function pull_scripts() {
   cd $builddir/civ
 
+  run_as_root "rm -rf $builddir/civ/*.zip"
   wget https://github.com/projectceladon/celadon-binary/raw/master/CIV_00.20.02.24_A10/caas-ota-QMm000000.zip
   wget https://github.com/projectceladon/celadon-binary/raw/master/CIV_00.20.02.24_A10/caas-releasefiles-userdebug.tar.gz
 
@@ -67,7 +68,7 @@ function save_env_deleteme(){
 
 function ubu_thermal_conf (){
 
-	systemctl stop thermald.service
+	run_as_root "systemctl stop thermald.service"
 	run_as_root "cp $CIV_INSTALL_FOLDER/scripts/intel-thermal-conf.xml /etc/thermald"
 	run_as_root "cp $CIV_INSTALL_FOLDER/scripts/thermald.service  /lib/systemd/system"
 	run_as_root "systemctl daemon-reload"
@@ -92,18 +93,15 @@ function prep_civ() {
 	ubu_thermal_conf
 	install_9p_module
 
-  rerurn
-
 #	ask_reboot
-
 }
 
 # Flash qcow2 file
 function build_android_qcow() {
-  cd $builddir/civ
+  cd "$builddir/civ"
 
   echo "calling start_flash_usb.sh"
-  sudo ./scripts/start_flash_usb.sh caas-flashfiles-QMm000000.zip --display-off
+  sudo -E ./scripts/start_flash_usb.sh caas-flashfiles-QMm000000.zip --display-off
 }
 
 # Start CIV
@@ -166,14 +164,14 @@ function build_startup_file(){
 
   printf "Creating start-android-$low_vgpu.sh file.. "
   #printf "%s\n"  "${str[@]}" | run_as_root "tee -a $INSTALL_GUEST-$low_vgpu.sh"
-  printf "%s\n"  "${str[@]}" | tee -a $vmdir/script/start-android-$low_vgpu.sh
+  printf "%s\n"  "${str[@]}" | tee -a $vmdir/scripts/start-android-$low_vgpu.sh
 #  printf "%s\n"  "${str[@]}" > $TEMP_FILE
 }
 
 # uncomment all below after testing
 
-pull_scripts
-prep_civ
+#pull_scripts
+#prep_civ
 
 echo "before calling build_android_qcow"
 build_android_qcow
