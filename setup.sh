@@ -32,9 +32,8 @@ function setup_main() {
   done
 }
 
-
 #if mdev directory not exist then exit
-[[ ! -d /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types ]] && exit 1
+[[ ! -d /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types ]] && echo "i${red}/sys/bus/pci/device/0000:00:02.0/mdev_supported_types not exists${NC}" && exit 1
 
 setup_main
 source $cdir/systemd/config-systemd.sh

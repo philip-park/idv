@@ -28,13 +28,12 @@ function config_main() {
   cp $idv_config_file $tempfile
 
   # install enough package to start config
-  run_as_root "apt -y install uuid"
+  install_pkgs "uuid dialog"
 
-  # install qemu-system-x86 and copy firmware to /var/vm/fw
-#  build_vm_directory
+  # Build VM directory in /var/vm and copy necessary files. 
   source ./scripts/build-vm-directory.sh
 
-  run_as_root "apt -y install dialog"  # make sure dialog is installed
+#  run_as_root "apt -y install dialog"  # make sure dialog is installed
   source $cdir/scripts/config-vgpu.sh  # get vgpu, gfx port, and port mask info
 
   # gfx_port is ports detected by IDV gvt_port_disp_status

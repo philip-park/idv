@@ -77,16 +77,6 @@ function ubu_thermal_conf (){
 
 	
 function prep_civ() {
-#if [[ $version =~ "Ubuntu" ]]; then
-####	check_network
-####	ubu_changes_require
-####	save_env
-####	check_kernel
-	#Auto start service for audio will be enabled in future
-	#install_auto_start_service
-####	ubu_install_qemu
-####	ubu_build_ovmf
-####	ubu_enable_host
 	if [[ $1 == "--gvtd" ]]; then
 		systemctl set-default multi-user.target
 	fi
@@ -101,20 +91,25 @@ function prep_civ() {
 	#starting Intel Thermal Deamon, currently supporting CML/EHL only.
 	ubu_thermal_conf
 	install_9p_module
-exit
-	ask_reboot
+
+  rerurn
+
+#	ask_reboot
 
 }
 
 # Flash qcow2 file
 function build_android_qcow() {
   cd $builddir/civ
+
+  echo "calling start_flash_usb.sh"
   sudo ./scripts/start_flash_usb.sh caas-flashfiles-QMm000000.zip --display-off
 }
 
 # Start CIV
 function start_android() {
   cd $builddir/civ
+
   sudo -E ./scripts/start_android_qcow2.sh --display-off
 }
 
@@ -169,17 +164,19 @@ function build_startup_file(){
   vgpu_guid=($(grep "^$vgpu" $idv_config_file))
   str+=( "-device vfio-pci-nohotplug,ramfb=off,sysfsdev=$gfx_device/${vgpu_guid#*=},display=off,x-igd-opregion=on" )
 
-  printf "Creating $INSTALL_GUEST-$low_vgpu.sh file.. "
+  printf "Creating start-android-$low_vgpu.sh file.. "
   #printf "%s\n"  "${str[@]}" | run_as_root "tee -a $INSTALL_GUEST-$low_vgpu.sh"
-  printf "%s\n"  "${str[@]}" | tee -a start-android-$low_vgpu.sh
+  printf "%s\n"  "${str[@]}" | tee -a $vmdir/script/start-android-$low_vgpu.sh
 #  printf "%s\n"  "${str[@]}" > $TEMP_FILE
 }
 
 # uncomment all below after testing
 
-#pull_scripts
-#prep_civ
-#build_android_qcow
+pull_scripts
+prep_civ
+
+echo "before calling build_android_qcow"
+build_android_qcow
 
 # to use the CIV released startup file
 #start_android

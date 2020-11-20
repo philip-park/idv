@@ -232,12 +232,19 @@ function create_files() {
 #  if [[ $? -eq 0 ]]; then
 #  build_install_qemu_batch "$vgpuinfo"
 
-  echo "building install file"
-  build_qemu_batch "install" "$vgpuinfo"
+  qcow_opt=($(grep "GUEST_QCOW2_$vgpuinfo" $idv_config_file))
 
-  echo "building start file"
-  build_qemu_batch "start" "$vgpuinfo" 
+  if [[ $qcow_opt == *"android"* ]]; then
+    echo "${yellow}Run civ.sh"
+  else
+    echo "building install file"
+    build_qemu_batch "install" "$vgpuinfo"
+
+    echo "building start file"
+    build_qemu_batch "start" "$vgpuinfo" 
+  fi
+
+
     
-#  fi
 }
 
