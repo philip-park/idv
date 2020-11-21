@@ -21,7 +21,7 @@ function build_vm_directory() {
   run_as_root "cp -r ./scripts/network $vmdir/scripts"
   if [[ -f "$builddir/civ/OVMF.fd" ]]; then
     run_as_root "cp -f $builddir/civ/OVMF.fd $vmdir/fw"
-  elif
+  else
     [[ -f "/usr/share/qemu/OVMF.fd" ]] && run_as_root "cp -f /usr/share/qemu/OVMF.fd $vmdir/fw"
   fi
 }

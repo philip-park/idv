@@ -8,7 +8,7 @@ function install_kernel() {
 
   [[ -z "$debs" ]] && echo -e "${red}✖${NC} Can't find *.deb file" && exit 1
 
-  source $cdir/scripts/config-modules.sh
+#  source $cdir/scripts/config-modules.sh
   run_as_root "dpkg -i build/*.deb"
   source ./grub-setup.sh
 
@@ -34,6 +34,8 @@ function prep_build() {
   # Install runtime package
   install_pkgs "bridge-utils"
 
+  # update modules
+  source $cdir/scripts/config-modules.sh
 #  dialog=$( dpkg -l | grep -w " dialog " )
 #  [[ -z $dialog ]] && run_as_root "apt-get install dialog"
 #  acl=$( dpkg -l | grep -w " acl " )

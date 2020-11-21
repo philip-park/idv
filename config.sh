@@ -28,7 +28,10 @@ function config_main() {
   cp $idv_config_file $tempfile
 
   # install enough package to start config
-  install_pkgs "uuid dialog"
+  # bc - needed by macgen.sh file to generate random MAC for NIC
+  # uuid - needed to generate guid for VGPU
+  # dialog - needed by menu driven option selection
+  install_pkgs "uuid dialog bc"
 
   # Build VM directory in /var/vm and copy necessary files. 
   source ./scripts/build-vm-directory.sh

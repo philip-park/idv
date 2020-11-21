@@ -23,11 +23,15 @@ NC=`tput sgr0`
 # scripts/custom-function for selectWithDefault
 #===========================================
 function select_mdev_type() {
-#  unset list
-  local declare -a list=()
+  unset list
+#  local declare -a list=()
 #echo "mdev entgered"
-  mdev_type=( /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/i915-GVTg_V5_* )
+  mdev_type=($( ls /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types/ 2>/dev/null ))
   # This actually the total number of available node and set to default node
+
+  [[ -z $mdev_type ]] && \
+    dialog --msgbox "Can't find mdev supported type /sys/bus/pci/devices/0000:00:02.0/mdev_supported_types. Please check installation of kernel and grub setting. \n\n" 10 40 && exit 1
+
   current_option=${#mdev_type[@]}
 
   # set to default option
