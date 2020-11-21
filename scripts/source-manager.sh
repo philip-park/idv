@@ -59,7 +59,9 @@ function ubu_build_ovmf(){
 function download_qemu() {
   cd "$builddir"
 
-  install_pkgs "pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev  libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison make libiscsi-dev librbd-dev libaio-dev gettext"
+  # need to build qemu
+  install_pkgs "pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison gettext "
+  #install_pkgs "pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison make libiscsi-dev librbd-dev libaio-dev gettext"
 
   [[ ! -z "$builddir/$qemu_dir" ]] && find $builddir/$qemu_dir -type d -name "$qemu_dir" -exec rm -rf {} +
   [[ ! -z "$qemupatch" ]] && find $qemupatch -type d -name "$qemu_dir" -exec rm -rf {} +
@@ -92,7 +94,7 @@ function download_qemu() {
 #---------------------------------------------
 function build_qemu() {
 #  [[ -z "$(ls -A $builddir/$qemu_dir)" ]] && echo "${red}Can't find qemu source..${NC}"; return
-  echo "make 2 qemu cd $builddir/$qemu_dir"
+  echo "build_qemux: make 2 qemu cd $builddir/$qemu_dir"
 
   cd $builddir/$qemu_dir/$QEMU_REL
 
@@ -163,7 +165,7 @@ function build_sources() {
   echo "return from install docker: $cdir"
   # run docker as user to build kernel
 #  run_as_root "docker run --rm -v $cdir:/build 
-  run_as_root "docker run --rm --net=host -v $cdir:$cdir \
+  run_as_root "docker run --rm --net=host -v $cdir:$cdir -v /etc/localtime:/etc/localtime:ro \
         -u $(id -u ${USER}):$(id -g ${USER}) \
        --name bob mydocker/bob_the_builder  bash -c \"cd $cdir/docker; ./build-sources.sh\""
 #       --name bob mydocker/bob_the_builder"

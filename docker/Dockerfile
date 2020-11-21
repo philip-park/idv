@@ -11,7 +11,7 @@ RUN apt-get update \
 	libspice-server-dev autoconf libtool \
 	python-dev liblzma-dev libc6-dev libegl1-mesa-dev \
 	libepoxy-dev libdrm-dev libgbm-dev wget lz4 \
-	libegl1-mesa-dev libgtk2.0-dev libusb-1.0.0-dev \
+	libegl1-mesa-dev libgtk2.0-dev libusb-1.0-0-dev \
 	device-tree-compiler texinfo python3-sphinx libaio-dev \ 
 	libattr1-dev libbrlapi-dev libcap-dev libcap-ng-dev \ 
 	libcurl4-gnutls-dev gnutls-dev libgtk-3-dev libvte-2.91-dev \
@@ -22,6 +22,6 @@ RUN apt-get update \
 	uuid-dev xfslibs-dev libjpeg-dev libpmem-dev \
 	gcc-s390x-linux-gnu gcc-alpha-linux-gnu net-tools \
 	libc6.1-dev-alpha-cross gcc-powerpc64-linux-gnu rsync libelf-dev \
-  uuid-dev nasm acpidump iasl mtools dosfstools unzip \
+  uuid-dev nasm acpidump iasl mtools dosfstools unzip pkg-config \
  && apt-get clean
 #ENTRYPOINT ["/bin/bash", "-c", "cd /build/docker; ./build-docker.sh"]
