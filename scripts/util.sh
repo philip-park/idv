@@ -67,7 +67,7 @@ function install_pkgs() {
 
   for i in ${pkgs[@]}; do
     if ! dpkg -s $i >/dev/null 2>&1; then
-      echo "installing $i"
+      echo "installing_packages $i"
       run_as_root "apt-get install -y $i >/dev/null 2>&1"
 #    else
 #      echo "already installed: $i"
@@ -84,35 +84,3 @@ function progressshow ()
         [[ $c != $cr && $c != $nl ]] && count=0 || ((count++)); [[ "$count" -gt 1 ]] && flag=true
   done
 }
-
-function install_packages_deleteme() {
-  echo "${green}Installing packages needed.. may take some time.${NC}"
-    run_as_root "apt -y autoremove" #&>/dev/null"
-    run_as_root "apt -y install kernel-package"
-    run_as_root "apt-get -y install rsync liblz4-tool libelf-dev build-essential libfdt-dev libpixman-1-dev libssl-dev vim bc socat libsdl1.2-dev libspice-server-dev autoconf libtool xtightvncviewer tightvncserver x11vnc uuid-runtime uuid uml-utilities bridge-utils python-dev liblzma-dev libc6-dev libegl1-mesa-dev libepoxy-dev libdrm-dev libgbm-dev spice-client-gtk libgtk2.0-dev libusb-1.0-0-dev bison flex openssh-server uuid"
-}
-
-function build_fw_directory_deleteme() {
-  run_as_root "apt-get install -y qemu-system-x86"
-
-  if [[ -f /usr/share/qemu/bios.bin ]]; then
-    run_as_root "cp /usr/share/qemu/bios.bin $vmdir/fw"
-  elif [[ -f /usr/share/seabios/bios.bin ]]; then
-    run_as_root "cp /usr/share/seabios/bios.bin $vmdir/fw"
-  fi
-    
-  [[ -f /usr/share/qemu/OVMF.fd ]] && run_as_root "cp /usr/share/qemu/OVMF.fd $vmdir/fw" \
-      || echo "Error: can't find /usr/share/qemu/OVMF.fd file"
-}
-
-function build_vm_directory_deleteme() {
-  if [[ $EUID -eq 0 ]];then
-    mkdir -m a=rwx -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}
-  else
-    run_as_root "mkdir -m a=rwx -p {$vmdir,$vmdir/fw,$vmdir/disk,$vmdir/iso,$vmdir/scripts}"
-  fi
-  build_fw_directory
-  run_as_root "cp -r ./scripts/network $vmdir/scripts/"
-}
-
-
