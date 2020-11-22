@@ -79,12 +79,11 @@ function download_qemu() {
   
   cd $QEMU_REL
   patchfiles=($( ls -A $qemupatch 2>/dev/null ))
-  if [[ $? -eq 0 ]]; then
-    for i in ${patchfiles[@]}; do
-      echo "applying patch to qemu: $qemupatch/$i"
-       patch -p1 < $qemupatch/$i
-    done
-  fi
+  echo "patching_qemu: directory: $QEMU_REL, $patchfiles"
+  for i in ${patchfiles[@]}; do
+    echo "applying patch to $QEMU_REL: $qemupatch/$i"
+     patch -p1 < $qemupatch/$i
+  done
 
   cd $cdir
 }
@@ -125,6 +124,8 @@ function download_kernel() {
     tar -C $patchdir -xzvf $patches
   fi
   cd $kdir
+
+  echo "applying kernel patch from $kernelpatch"
   git apply $kernelpatch/* #2&>/dev/null
 
 #  git apply --directory=$build/$kdir $patchdir/$kernelpatch/* #2&>/dev/null
