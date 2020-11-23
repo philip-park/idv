@@ -103,6 +103,9 @@ function build_qemu() {
     --audio-drv-list=pa
 
   make -j `nproc`
+
+  [[ -f ./qemu-edid ]] && run_as_root "cp -f ./{qemu-edid,qemu-img,qemu-ga,qemu-io,qemu-keymap,qemu-nbd,qemu-bridge-helper} /usr/bin/"
+  [[ -f ./x86_64-softmmu/qemu-system-x86_64 ]] && run_as_root "cp -f ./x86_64-softmmu/qemu-system-x86_64 /usr/bin"
   cd $cdir
 }
 
@@ -170,7 +173,6 @@ function build_sources() {
         -u $(id -u ${USER}):$(id -g ${USER}) \
        --name bob mydocker/bob_the_builder  bash -c \"cd $cdir/docker; ./build-sources.sh\""
 #       --name bob mydocker/bob_the_builder"
-
 }
 
 
