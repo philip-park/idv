@@ -170,8 +170,8 @@ function build_startup_file(){
 
 # uncomment all below after testing
 
-#pull_scripts
-#prep_civ
+pull_scripts
+prep_civ
 
 echo "before calling build_android_qcow"
 build_android_qcow

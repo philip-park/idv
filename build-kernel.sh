@@ -29,7 +29,8 @@ source $idv_config_file
 #-------------------------------------
 function prep_build() {
 #  install_pkgs "dialog acl make build-essential flex bison bc dmidecode"
-  install_pkgs "dialog make"
+
+  install_pkgs "dialog"
 
   # Install runtime package
   install_pkgs "bridge-utils"

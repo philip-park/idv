@@ -31,7 +31,8 @@ function config_main() {
   # bc - needed by macgen.sh file to generate random MAC for NIC
   # uuid - needed to generate guid for VGPU
   # dialog - needed by menu driven option selection
-  install_pkgs "uuid dialog bc"
+  # net-tools, dnsmasq - needed by qemu runtime to set up network for guest OS
+  install_pkgs "uuid dialog bc dnsmasq, net-tools"
 
   # Build VM directory in /var/vm and copy necessary files. 
   source ./scripts/build-vm-directory.sh

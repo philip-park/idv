@@ -183,7 +183,8 @@ function build_qemu_batch() {
   else
     str+=( "-vga none \\" )
   fi
-
+#############################
+#  str+=( "-display gtk,gl=on \\" )
   str+=( "-display egl-headless \\" )
   str+=( "-k en-us \\" )
   str+=( "-vnc :0 \\" )
@@ -207,6 +208,8 @@ function build_qemu_batch() {
     unset str          # if there is no GUID set for startup file, then clear the $str
     str+=("GUID is not set. Re-run the config.sh")
   else
+#################################
+#    str+=( "-device vfio-pci,sysfsdev=$gfx_device/${vgpu_guid#*=},display=on,x-igd-opregion=on" )
     str+=( "-device vfio-pci,sysfsdev=$gfx_device/${vgpu_guid#*=},display=off,x-igd-opregion=on" )
   fi
 
@@ -240,8 +243,5 @@ function create_files() {
     echo "building start file"
     build_qemu_batch "start" "$vgpuinfo" 
   fi
-
-
-    
 }
 
