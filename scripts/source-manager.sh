@@ -144,6 +144,26 @@ function download_kernel() {
 #  ( yes "" | make oldconfig )
 }
 
+function get_kernel_minor_version() {
+  unset kernel_list
+  index=0
+  debs=($( ls -R $cdir/build/*.deb 2>/dev/null | grep $kversion ))
+  for i in ${debs[@]}; do
+    if [[ "$i" == *"$kversion"* && "$i" == *"$krevision"* ]]; then
+#      echo "debs: ${i##*+_$krevision-}"
+      temp=${i##*+_$krevision-}
+      temp=${temp%%_*}
+      [[ $index -le $temp ]] && index=$temp
+#      echo "index: $index"
+    fi
+
+  done
+  ((index=index+1))
+#  echo "final index: $index"
+  return $index
+}
+
+
 #---------------------------------------------
 # Build kernel
 #---------------------------------------------
@@ -153,7 +173,10 @@ function build_kernel() {
   echo "${green}--- Appling kernel config ...${NC}"
   yes "" | make oldconfig 
   echo "building kernel"
-  CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers 
+  get_kernel_minor_version
+  idx=$?
+  echo "kernel index: $idx"
+  CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision-$idx --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers 
 }
 
 ##############################################
