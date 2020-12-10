@@ -16,8 +16,8 @@ NC=`tput sgr0`
 # global variable shared among scripts
 #=================================
 cdir=$(pwd)
-
 version="0.8"
+
 krevision="3.0"
 kversion="intelgvt"
 

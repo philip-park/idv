@@ -62,7 +62,6 @@ function download_qemu() {
   # need to build qemu
   install_pkgs "pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison gettext "
   #install_pkgs "pkg-config libgtk-3-dev libsdl2-dev libgbm-dev libspice-server-dev libusb-1.0-0-dev libcap-dev libcap-ng-dev libattr1-dev flex bison make libiscsi-dev librbd-dev libaio-dev gettext"
-
   [[ ! -z "$builddir/$qemu_dir" ]] && find $builddir/$qemu_dir -type d -name "$qemu_dir" -exec rm -rf {} +
   [[ ! -z "$qemupatch" ]] && find $qemupatch -type d -name "$qemu_dir" -exec rm -rf {} +
 #  find $patchdir -type d -name "$qemu_dir" -exec rm -rf {} +
@@ -104,8 +103,11 @@ function build_qemu() {
 
   make -j `nproc`
 
-  [[ -f ./qemu-edid ]] && run_as_root "cp -f ./{qemu-edid,qemu-img,qemu-ga,qemu-io,qemu-keymap,qemu-nbd,qemu-bridge-helper} /usr/bin/"
-  [[ -f ./x86_64-softmmu/qemu-system-x86_64 ]] && run_as_root "cp -f ./x86_64-softmmu/qemu-system-x86_64 /usr/bin"
+  echo "build_qemux: install qemu $builddir/$qemu_dir ($pwd)"
+  install_pkgs "make"
+  run_as_root "make install"
+#  [[ -f ./qemu-edid ]] && run_as_root "cp -f ./{qemu-edid,qemu-img,qemu-ga,qemu-io,qemu-keymap,qemu-nbd,qemu-bridge-helper} /usr/bin/"
+#  [[ -f ./x86_64-softmmu/qemu-system-x86_64 ]] && run_as_root "cp -f ./x86_64-softmmu/qemu-system-x86_64 /usr/bin"
   cd $cdir
 }
 
@@ -116,7 +118,7 @@ kernelpatch="${patches%.tar.gz}"
 function download_kernel() {
   cd $builddir
   # 1) delete existing kernel directory if exist
-  [[ ! -z "$builddir/$kdir" ]] && find . -type d -name "$kdir" -exec rm -rf {} +
+  [[ ! -z "$builddir/$kdir" ]] && find $builddir -type d -name "$kdir" -exec rm -rf {} +
 
   # 2) check fresh copy of the kernel from a repo
   git clone --depth 1 $repo --branch $branch --single-branch $kdir
@@ -151,7 +153,7 @@ function get_kernel_minor_version() {
   for i in ${debs[@]}; do
     if [[ "$i" == *"$kversion"* && "$i" == *"$krevision"* ]]; then
 #      echo "debs: ${i##*+_$krevision-}"
-      temp=${i##*+_$krevision-}
+      temp=${i##*+_$krevision.}
       temp=${temp%%_*}
       [[ $index -le $temp ]] && index=$temp
 #      echo "index: $index"
@@ -176,7 +178,7 @@ function build_kernel() {
   get_kernel_minor_version
   idx=$?
   echo "kernel index: $idx"
-  CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision-$idx --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers 
+  CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision.$idx --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers 
 }
 
 ##############################################
