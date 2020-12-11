@@ -123,6 +123,8 @@ function download_kernel() {
   # 2) check fresh copy of the kernel from a repo
   git clone --depth 1 $repo --branch $branch --single-branch $kdir
 
+  [[ $? -ne "0" ]] && echo "${red}Can't connec to network${NC}" && exit 128
+
   # 3) unpack patches if exists
   if [[ ! -d "$kernelpatch" && -f "$patches" ]]; then
     echo "unpacking kernel patch file: $kernelpatch"
@@ -162,6 +164,7 @@ function get_kernel_minor_version() {
   done
   ((index=index+1))
 #  echo "final index: $index"
+  update_idv_config "KERNEL_INDEX" "$index"
   return $index
 }
 
