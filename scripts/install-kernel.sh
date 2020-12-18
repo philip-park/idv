@@ -109,21 +109,10 @@ function install_kernel() {
   run_as_root "dpkg -i $deb $header"
 }
 
-check_idv_kernel_installed
-echo "count: $?"
+#check_idv_kernel_installed
+#echo "count: $?"
 
 install_kernel
-exit
-
-check_booted_kernel
-# returns 0 if kernel is not already installed
-if [[ $? -eq 0 ]]; then
-  install_kernel
-  [[ $? -eq 0 ]] && source grub-setup.sh || echo "failed to install/setup kernel"
-else
-  echo "Your are already running IDV enabled kernel"
-  echo "run remove installed kernel, reboot if you want to reinstall"
-fi
 
 
 
