@@ -129,11 +129,12 @@ function download_kernel() {
   if [[ ! -d "$kernelpatch" && -f "$patches" ]]; then
     echo "unpacking kernel patch file: $kernelpatch"
     tar -C $patchdir -xzvf $patches
+    git apply --directory=$build/$kdir $patchdir/$kernelpatch/* #2&>/dev/null
   fi
   cd $kdir
 
-  echo "applying kernel patch from $kernelpatch"
-  git apply $kernelpatch/* #2&>/dev/null
+#  echo "applying kernel patch from $kernelpatch"
+#  git apply $kernelpatch/* #2&>/dev/null
 
 #  git apply --directory=$build/$kdir $patchdir/$kernelpatch/* #2&>/dev/null
 
@@ -151,16 +152,25 @@ function download_kernel() {
 function get_kernel_minor_version() {
   unset kernel_list
   index=0
-  debs=($( ls -R $cdir/build/*.deb 2>/dev/null | grep $kversion ))
+  debs=($( ls -R $cdir/build/*linux-image*.deb 2>/dev/null | grep $kversion ))
   for i in ${debs[@]}; do
-    if [[ "$i" == *"$kversion"* && "$i" == *"$krevision"* ]]; then
-#      echo "debs: ${i##*+_$krevision-}"
-      temp=${i##*+_$krevision.}
-      temp=${temp%%_*}
-      [[ $index -le $temp ]] && index=$temp
-#      echo "index: $index"
-    fi
+#    if [[ "$i" == *"$kversion"* && "$i" == *"$krevision"* ]]; then
+    if [[ "$i" == *"$kversion"* ]]; then
+      echo "kernel: $i"
+      echo "debs: ${i##*+_$krevision-}"
 
+      temp=${i%%_amd64.deb}
+      echo "temp: $temp"
+      temp=${temp##*.}
+
+
+
+#      temp=${i##*+_$krevision.}
+#      temp=${temp%%_*}
+echo "temp: $temp"
+      [[ $index -le $temp ]] && index=$temp
+      echo "index: $index"
+    fi
   done
   ((index=index+1))
 #  echo "final index: $index"
@@ -181,7 +191,7 @@ function build_kernel() {
   get_kernel_minor_version
   idx=$?
   echo "kernel index: $idx"
-  CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion --revision $krevision.$idx --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers 
+  CONCURRENCY_LEVEL=`nproc` fakeroot make-kpkg -j`nproc` --initrd --append-to-version=-$kversion-$idx --revision $krevision.$idx --overlay-dir=$cdir/ubuntu-package kernel_image kernel_headers 
 }
 
 ##############################################

@@ -89,3 +89,9 @@ display_settings
 # build kernel/qemu
 build_sources
 
+# Install kernel
+source $cdir/scripts/install-kernel.sh
+
+# grub setup
+source $cdir/scripts/setup-grub.sh
+
