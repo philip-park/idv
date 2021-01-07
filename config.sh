@@ -32,7 +32,7 @@ function config_main() {
   # uuid - needed to generate guid for VGPU
   # dialog - needed by menu driven option selection
   # net-tools, dnsmasq - needed by qemu runtime to set up network for guest OS
-  install_pkgs "uuid dialog bc dnsmasq, net-tools"
+  install_pkgs "uuid dialog bc dnsmasq net-tools"
 
   # Build VM directory in /var/vm and copy necessary files. 
   source ./scripts/build-vm-directory.sh
@@ -83,7 +83,8 @@ function config_main() {
 
 #      Systemd)
 #        source $cdir/systemd/config-systemd.sh;;
-      Exit)  rm -f $tempfile; source ./setup.sh; exit 0 ;;
+#      Exit)  rm -f $tempfile; source ./setup.sh; exit 0 ;;
+      Exit)  rm -f $tempfile; source ./scripts/setup-vm.sh; exit 0 ;;
     esac
   done
 
