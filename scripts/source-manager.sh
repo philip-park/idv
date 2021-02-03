@@ -118,7 +118,8 @@ kernelpatch="${patches%.tar.gz}"
 function download_kernel() {
   cd $builddir
   # 1) delete existing kernel directory if exist
-  [[ ! -z "$builddir/$kdir" ]] && find $builddir -type d -name "$kdir" -exec rm -rf {} +
+#  [[ ! -z "$builddir/$kdir" ]] && find $builddir -type d -name "$kdir" -exec rm -rf {} +
+  [[ ! -z "$builddir/$kdir" ]] && return
 
   # 2) check fresh copy of the kernel from a repo
   git clone --depth 1 $repo --branch $branch --single-branch $kdir
