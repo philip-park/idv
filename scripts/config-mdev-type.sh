@@ -49,7 +49,7 @@ function select_mdev_type() {
 Select the mdev type from the following list found in ~/mdev_supported_types."  20 80 10 \
             "${list[@]}" \
             3>&1 1>&2 2>&3 )
-
+  echo "return: $?, mdev_type_option: $mdev_type_option"
   update_idv_config "mdev_type" "$mdev_type_option"
 }
 

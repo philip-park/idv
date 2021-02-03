@@ -15,6 +15,7 @@ gfx_device="/sys/bus/pci/devices/0000:00:02.0"
 
 function build_create_vgpu() {
   unset temp
+  [[ -z $mdev_type ]] &&  dialog --msgbox "Can't detect the mdev type. Pleas boot to iGVTg kernel and run config.sh to set the mdev type.\n\n" 20 80 && exit 1
 #  vgpuinfo=$1
 
   temp+=( "#!/bin/bash" )

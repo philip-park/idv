@@ -46,6 +46,8 @@ Select the mdev type from the following list found in ~/mdev_supported_types."  
   update_idv_config "mdev_type" "$mdev_type_option"
 }
 
+guid=( f50aab10-7cc8-11e9-a94b-6b9d8245bfc1  f50aab10-7cc8-11e9-a94b-6b9d8245bfc2 f50aab10-7cc8-11e9-a94b-6b9d8245bfc3 f50aab10-7cc8-11e9-a94b-6b9d8245bfc4 )
+
 function set_display_port_mask() {
   card0=( /sys/devices/pci0000\:00/0000\:00\:02.0/drm/card0/gvt_disp_ports_status )
   available_ports=$(grep "Available display ports" $card0)
