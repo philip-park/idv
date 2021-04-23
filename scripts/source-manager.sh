@@ -26,7 +26,7 @@ function display_settings() {
     echo "patches:      ${yellow}No patches are applied ...${NC}"
   fi
 
-  echo "kernel dir:   ${green}$kdir${NC}"
+  echo "kernel dir:   ${green}$builddir/$kdir${NC}"
   echo "Kernel ver:   ${green}$kversion${NC}"
   echo "Kernel rev:   ${green}$krevision${NC}"
   echo -e "current dir:  ${blink}$cdir${NC}"
@@ -116,9 +116,12 @@ kernelpatch="${patches%.tar.gz}"
 # kernel source and build 
 ##############################################
 function download_kernel() {
+  ( mkdir -p $builddir )
   cd $builddir
   # 1) exit if kernel directory exist
-#  [[ ! -z "$builddir/$kdir" ]] && find $builddir -type d -name "$kdir" -exec rm -rf {} +
+  [[ ! -d "$builddir/$kdir" ]] && find $builddir -type d -name "$kdir" -exec rm -rf {} +
+
+  # if kernel directory exists, then we assume the kernel is already pulled and patched if needed
   [[ -d "$builddir/$kdir" ]] && return
 
   # 2) check fresh copy of the kernel from a repo
