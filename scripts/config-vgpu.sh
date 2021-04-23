@@ -46,7 +46,7 @@ Select the mdev type from the following list found in ~/mdev_supported_types."  
   update_idv_config "mdev_type" "$mdev_type_option"
 }
 
-guid=( f50aab10-7cc8-11e9-a94b-6b9d8245bfc1  f50aab10-7cc8-11e9-a94b-6b9d8245bfc2 f50aab10-7cc8-11e9-a94b-6b9d8245bfc3 f50aab10-7cc8-11e9-a94b-6b9d8245bfc4 )
+default_guid=( f50aab10-7cc8-11e9-a94b-6b9d8245bfc1  f50aab10-7cc8-11e9-a94b-6b9d8245bfc2 f50aab10-7cc8-11e9-a94b-6b9d8245bfc3 f50aab10-7cc8-11e9-a94b-6b9d8245bfc4 )
 
 function set_display_port_mask() {
   card0=( /sys/devices/pci0000\:00/0000\:00\:02.0/drm/card0/gvt_disp_ports_status )
@@ -56,7 +56,7 @@ function set_display_port_mask() {
 #  detected=0
   port_mask=""
   j=1
-  for (( i=0; i<8; i++)); do
+  for (( i=0; i<${#default_guid[@]}; i++)); do
     nibble=$((ports&0xf)); ports=$((ports>>4))
 
 #    guid=$( grep "^VGPU$i=" $idv_config_file )
@@ -72,7 +72,8 @@ function set_display_port_mask() {
 
       # if UUID already *not" exists then update
       guid=$( grep "^VGPU$i=" $idv_config_file )
-      [[ -z ${guid##*=} ]] && update_idv_config "VGPU$i" "$(uuid)"
+#      [[ -z ${guid##*=} ]] && update_idv_config "VGPU$i" "$(uuid)"
+      [[ -z ${guid##*=} ]] && update_idv_config "VGPU$i" "${default_guid[$i]}"
 #      update_idv_config "VGPU$i" "$(uuid)"
 #      detected=1
       j=$((j+1))
