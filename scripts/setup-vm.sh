@@ -211,7 +211,9 @@ function build_qemu_batch() {
   else
 #################################
 #    str+=( "-device vfio-pci,sysfsdev=$gfx_device/${vgpu_guid#*=},display=on,x-igd-opregion=on" )
-    str+=( "-device vfio-pci,sysfsdev=$gfx_device/${vgpu_guid#*=},display=off,x-igd-opregion=on" )
+    if [[ $file_prefix != "install" ]]; then
+      str+=( "-device vfio-pci,sysfsdev=$gfx_device/${vgpu_guid#*=},display=off,x-igd-opregion=on" )
+    fi
   fi
 
   printf "%s\n"  "Creating $file_prefix-guest-$low_vgpu.sh file.. "
