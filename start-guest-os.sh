@@ -24,7 +24,7 @@ case $1 in
     vgpu_guid=${temp##*=}
     [[ -z $vgpu_guid ]] && echo "Install GVTg kernel/boot to kernel, and run config.sh" && exit 1
 
-    [[ ! -d /sys/bus/pci/devices/0000:00:02.0/$vgpu_guid ]] && run_as_boot "/var/vm/scripts/create-vgpu.sh"
+    [[ ! -d /sys/bus/pci/devices/0000:00:02.0/$vgpu_guid ]] && run_as_root "/var/vm/scripts/create-vgpu.sh"
     run_as_root "/var/vm/scripts/start-guest-$1.sh";;
   *)
     echo "The parameter should be either vgpu1, vgpu2, or vgpu3";;
