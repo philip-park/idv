@@ -58,7 +58,7 @@ function config_main() {
 #    mainlist+=( "Qemu" "Create install & startup qemu scripts" "Will populate /var/vm/scripts directory" )
 
     # add systemd auto start option
-#    mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
+    mainlist+=( "Systemd" "Add creating VGPU port during boot" "Add systemd to start create-vgpu.sh" )
   else
     dialog --msgbox "Can't detect monitor/s. Neither GVTg kernel is not installed nor monitor/s connected.\n\n" 10 40 && exit 1
   fi
@@ -81,8 +81,8 @@ function config_main() {
  #     Qemu)
  #       source ./setup.sh;;
 
-#      Systemd)
-#        source $cdir/systemd/config-systemd.sh;;
+      Systemd)
+        source $cdir/systemd/config-systemd.sh;;
 #      Exit)  rm -f $tempfile; source ./setup.sh; exit 0 ;;
       Exit)  rm -f $tempfile; source ./scripts/setup-vm.sh; exit 0 ;;
     esac
