@@ -53,12 +53,12 @@ function update_idv_config() {
 
 function run_as_root() {
   cmd=$1
-echo "cmd: ($EUID) $cmd"
+  echo "cmd: ($EUID) $cmd"
   if [[ $EUID -eq 0 ]];then
-    ($cmd)
+    eval "$cmd"
   else
     sudo -s -E <<EOF
-    ($cmd)
+    eval "$cmd"
 EOF
    fi
 }
