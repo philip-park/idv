@@ -23,8 +23,8 @@ function grub_setup() {
   if [[ $grub_modified -eq 1 ]]; then
     cmdline="GRUB_CMDLINE_LINUX=$cmdline\""
     sed -i "/.*GRUB_CMDLINE_LINUX=.*/c $cmdline" $tempfile
-    run_as_root "cp -f $tempfile $grubfile"
-    run_as_root "update-grub2"
+    cp -f $tempfile $grubfile
+    update-grub2
   fi
   rm -f $tempfile
 }
